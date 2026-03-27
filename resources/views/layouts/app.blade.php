@@ -38,6 +38,9 @@
                        class="btn-primary text-white text-sm font-medium px-5 py-2 rounded-xl">
                         + Add Recipe
                     </a>
+                    <a href="{{ route('profile.show') }}" class="text-sm text-gray-500 hover:text-gray-900 transition">
+                    {{ auth()->user()->name }}
+                    </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button class="text-sm text-gray-400 hover:text-red-500 transition">Logout</button>

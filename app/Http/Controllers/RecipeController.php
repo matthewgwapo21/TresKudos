@@ -14,21 +14,20 @@ class RecipeController extends Controller {
     public function index(Request $request) {
     $query = Recipe::with('user', 'category')->latest();
 
-    if ($request->filled('category')) {
-        $query->where('category_id', $request->category);
+        if ($request->filled('category')) {
+         $query->where('category_id', $request->category);
     }
 
-    $recipes    = $query->paginate(12);
-    $categories = Category::all();
-    return view('recipes.index', compact('recipes', 'categories'));
-}
+        $recipes    = $query->paginate(12);
+        $categories = Category::all();
+        return view('recipes.index', compact('recipes', 'categories'));
+    }
 
     public function show(Recipe $recipe) {
-        $recipe->load('ingredients', 'steps', 'user', 'category');
-        $isFavorited = auth()->check()
-            ? $recipe->isFavoritedBy(auth()->user())
-            : false;
-        return view('recipes.show', compact('recipe', 'isFavorited'));
+        $recipe->load('ingredients', 'steps', 'user', 'category', 'reviews.user', 'comments.user');
+        $isFavorited = auth()->check() ? $recipe->isFavoritedBy(auth()->user()) : false;
+        $userReview  = auth()->check() ? $recipe->userReview() : null;
+         return view('recipes.show', compact('recipe', 'isFavorited', 'userReview'));
     }
 
     public function create() {

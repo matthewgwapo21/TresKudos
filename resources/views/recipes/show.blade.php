@@ -115,6 +115,191 @@
                 </form>
             </div>
         @endif
+        <!-- Reviews section -->
+<div class="mt-10">
+    <h2 class="brand text-2xl font-black text-gray-900 mb-6">
+        Reviews
+        @if($recipe->reviews->count())
+            <span class="text-orange-500">
+                {{ $recipe->averageRating() }} ★
+            </span>
+            <span class="text-gray-300 text-lg font-normal">({{ $recipe->reviews->count() }})</span>
+        @endif
+    </h2>
+
+    <!-- Submit review form -->
+    @if(!$userReview)
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+            <h3 class="font-semibold text-gray-900 mb-4">Leave a Review</h3>
+            <form method="POST" action="{{ route('reviews.store', $recipe) }}" class="space-y-4">
+                @csrf
+
+                <!-- Star rating -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Rating *</label>
+                    <div class="flex gap-2" id="star-rating">
+                        @for($i = 1; $i <= 5; $i++)
+                            <button type="button"
+                                    onclick="setRating({{ $i }})"
+                                    class="star text-3xl text-gray-200 hover:text-orange-400 transition cursor-pointer"
+                                    data-value="{{ $i }}">★</button>
+                        @endfor
+                    </div>
+                    <input type="hidden" name="rating" id="rating-input" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Comment (optional)</label>
+                    <textarea name="body" rows="3"
+                              placeholder="Share your experience with this recipe..."
+                              class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition"></textarea>
+                </div>
+
+                <button type="submit"
+                        class="btn-primary text-white px-6 py-2.5 rounded-xl text-sm font-medium">
+                    Submit Review
+                </button>
+            </form>
+        </div>
+    @else
+        <!-- User already reviewed -->
+        <div class="bg-orange-50 border border-orange-100 rounded-2xl p-4 mb-6 flex items-center justify-between">
+            <div>
+                <p class="text-orange-600 font-medium text-sm">You rated this recipe</p>
+                <p class="text-orange-400">
+                    @for($i = 1; $i <= 5; $i++)
+                        {{ $i <= $userReview->rating ? '★' : '☆' }}
+                    @endfor
+                </p>
+            </div>
+            <form method="POST" action="{{ route('reviews.destroy', $recipe) }}">
+                @csrf
+                @method('DELETE')
+                <button class="text-red-400 hover:text-red-600 text-sm">Remove review</button>
+            </form>
+        </div>
+    @endif
+
+    <!-- All reviews -->
+    @if($recipe->reviews->count())
+        <div class="space-y-4">
+            @foreach($recipe->reviews as $review)
+                <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            @if($review->user->avatar)
+                                <img src="{{ Storage::url($review->user->avatar) }}"
+                                     class="w-9 h-9 rounded-full object-cover" alt="{{ $review->user->name }}">
+                            @else
+                                <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400">
+                                    {{ strtoupper(substr($review->user->name, 0, 1)) }}
+                                </div>
+                            @endif
+                            <div>
+                                <p class="font-medium text-gray-900 text-sm">{{ $review->user->name }}</p>
+                                <p class="text-xs text-gray-400">{{ $review->created_at->diffForHumans() }}</p>
+                            </div>
+                        </div>
+                        <div class="text-orange-400 text-lg">
+                            @for($i = 1; $i <= 5; $i++)
+                                {{ $i <= $review->rating ? '★' : '☆' }}
+                            @endfor
+                        </div>
+                    </div>
+                    @if($review->body)
+                        <p class="text-gray-600 text-sm leading-relaxed">{{ $review->body }}</p>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    @else
+        <div class="text-center py-10 text-gray-400">
+            <p class="text-4xl mb-2">⭐</p>
+            <p>No reviews yet. Be the first!</p>
+        </div>
+    @endif
+</div>
+<!-- Comments section -->
+<div class="mt-10">
+    <h2 class="brand text-2xl font-black text-gray-900 mb-6">
+        Comments
+        @if($recipe->comments->count())
+            <span class="text-gray-300 text-lg font-normal">({{ $recipe->comments->count() }})</span>
+        @endif
+    </h2>
+
+    <!-- Post comment form -->
+    <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+        <form method="POST" action="{{ route('comments.store', $recipe) }}" class="flex gap-3">
+            @csrf
+            @if(auth()->user()->avatar)
+                <img src="{{ Storage::url(auth()->user()->avatar) }}"
+                     class="w-10 h-10 rounded-full object-cover shrink-0" alt="">
+            @else
+                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400 shrink-0">
+                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                </div>
+            @endif
+            <div class="flex-1 flex gap-3">
+                <textarea name="body" rows="1"
+                          placeholder="Write a comment..."
+                          class="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition resize-none"></textarea>
+                <button type="submit"
+                        class="btn-primary text-white px-5 py-2.5 rounded-xl text-sm font-medium shrink-0">
+                    Post
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Comment list -->
+    @if($recipe->comments->count())
+        <div class="space-y-4">
+            @foreach($recipe->comments as $comment)
+                <div class="bg-white rounded-2xl border border-gray-100 p-5 flex gap-4">
+                    @if($comment->user->avatar)
+                        <img src="{{ Storage::url($comment->user->avatar) }}"
+                             class="w-9 h-9 rounded-full object-cover shrink-0" alt="">
+                    @else
+                        <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400 shrink-0">
+                            {{ strtoupper(substr($comment->user->name, 0, 1)) }}
+                        </div>
+                    @endif
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-medium text-gray-900 text-sm">{{ $comment->user->name }}</span>
+                                <span class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
+                            </div>
+                            @if(auth()->id() === $comment->user_id || auth()->user()->isAdmin())
+                                <form method="POST" action="{{ route('comments.destroy', $comment) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-red-300 hover:text-red-500 text-xs transition">Delete</button>
+                                </form>
+                            @endif
+                        </div>
+                        <p class="text-gray-600 text-sm leading-relaxed">{{ $comment->body }}</p>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @else
+        <div class="text-center py-10 text-gray-400">
+            <p class="text-4xl mb-2">💬</p>
+            <p>No comments yet. Start the conversation!</p>
+        </div>
+    @endif
+</div>
+
+<script>
+function setRating(value) {
+    document.getElementById('rating-input').value = value;
+    document.querySelectorAll('.star').forEach((star, index) => {
+        star.style.color = index < value ? '#f97316' : '#e5e7eb';
+    });
+}
+</script>
     @endauth
 
 </div>

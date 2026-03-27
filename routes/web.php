@@ -6,17 +6,24 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\SocialAuthController;
 
 // Guest only
 Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
+    Route::get('/auth/google',          [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
     Route::post('/login', [AuthController::class, 'login']);
+
 });
 
 // Auth required
-Route::middleware('auth')->group(function () {
+    Route::middleware('auth')->group(function () {
     // Home and browsing
   Route::get('/', [RecipeController::class, 'index'])->name('home');
     Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
@@ -30,6 +37,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
     Route::post('/favorites/{recipe}', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
     Route::get('/profile/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');   
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update'); 
+    Route::post('/recipes/{recipe}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::delete('/recipes/{recipe}/reviews', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    Route::post('/recipes/{recipe}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 

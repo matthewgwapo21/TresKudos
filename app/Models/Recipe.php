@@ -46,4 +46,18 @@ class Recipe extends Model {
         return $query->where('title', 'like', "%{$term}%")
                      ->orWhere('description', 'like', "%{$term}%");
     }
+    public function reviews() {
+        return $this->hasMany(Review::class)->latest();
+    }
+
+    public function averageRating() {
+        return round($this->reviews()->avg('rating'), 1);
+    }
+
+    public function userReview() {
+        return $this->reviews()->where('user_id', auth()->id())->first();
+        }
+    public function comments() {
+        return $this->hasMany(Comment::class)->latest();
+    }
 }
