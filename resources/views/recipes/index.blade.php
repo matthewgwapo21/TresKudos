@@ -33,8 +33,8 @@
                class="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-50 transition-all duration-300">
                
            @if($recipe->image)
-    <div class="overflow-hidden h-52">
-        <img src="{{ Storage::url($recipe->image) }}"
+                <div class="overflow-hidden h-52">
+                 <img src="{{ Storage::url($recipe->image) }}"
                     </div>
                 @else
                     <div class="h-52 bg-orange-50 flex items-center justify-center text-5xl">🍽️</div>
