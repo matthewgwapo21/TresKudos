@@ -42,7 +42,7 @@ public function login(Request $request) {
 
     if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
         $request->session()->regenerate();
-        return redirect()->route('recipes.index');  // ← change this
+        return redirect()->intended(route('recipes.index'));
     }
 
     return back()->withErrors([
