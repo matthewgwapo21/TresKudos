@@ -80,15 +80,18 @@ class RecipeController extends Controller {
         return redirect()->route('recipes.show', $recipe)
             ->with('success', 'Recipe published successfully!');
     }
-
-    public function edit(Recipe $recipe) {
-        $this->authorize('update', $recipe);
-        $categories = Category::all();
-        return view('recipes.edit', compact('recipe', 'categories'));
+public function edit(Recipe $recipe) {
+    if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
+        abort(403);
     }
+    $categories = Category::all();
+    return view('recipes.edit', compact('recipe', 'categories'));
+}
 
     public function update(Request $request, Recipe $recipe) {
-        $this->authorize('update', $recipe);
+         if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
+        abort(403);
+    }
 
         $request->validate([
             'title'              => 'required|string|max:255',
@@ -139,12 +142,19 @@ class RecipeController extends Controller {
             ->with('success', 'Recipe updated successfully!');
     }
 
-    public function destroy(Recipe $recipe) {
-        $this->authorize('delete', $recipe);
-        $recipe->delete();
-        return redirect()->route('recipes.index')
-            ->with('success', 'Recipe deleted.');
+public function destroy(Recipe $recipe) {
+    if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
+        abort(403);
     }
+    if ($recipe->image && str_starts_with($recipe->image, 'http')) {
+        // Cloudinary image — no need to delete locally
+    } elseif ($recipe->image) {
+        Storage::disk('public')->delete($recipe->image);
+    }
+    $recipe->delete();
+    return redirect()->route('recipes.index')
+        ->with('success', 'Recipe deleted.');
+}
 
     private function uploadToCloudinary($file, $folder = 'treskudos') {
         try {
