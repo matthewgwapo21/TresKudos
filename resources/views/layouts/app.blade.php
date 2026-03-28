@@ -34,6 +34,8 @@
                     @endif
                     <a href="{{ route('recipes.index') }}" class="text-sm text-gray-500 hover:text-gray-900 transition">Browse</a>
                     <a href="{{ route('favorites.index') }}" class="text-sm text-gray-500 hover:text-gray-900 transition">Favorites</a>
+                    <a href="{{ route('meal-plan.index') }}" class="text-sm text-gray-500 hover:text-gray-900 transition">Meal Plan</a>
+                    <a href="{{ route('shopping-list.index') }}" class="text-sm text-gray-500 hover:text-gray-900 transition">Shopping List</a>
                     <a href="{{ route('recipes.create') }}"
                        class="btn-primary text-white text-sm font-medium px-5 py-2 rounded-xl">
                         + Add Recipe

@@ -10,6 +10,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\MealPlanController;
+use App\Http\Controllers\ShoppingListController;
 
 // Guest only
 Route::middleware('guest')->group(function () {
@@ -44,7 +46,11 @@ Route::middleware('guest')->group(function () {
     Route::delete('/recipes/{recipe}/reviews', [ReviewController::class, 'destroy'])->name('reviews.destroy');
     Route::post('/recipes/{recipe}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    Route::get('/meal-plan', [MealPlanController::class, 'index'])->name('meal-plan.index');
+    Route::post('/meal-plan', [MealPlanController::class, 'store'])->name('meal-plan.store');
+    Route::delete('/meal-plan/{mealPlan}', [MealPlanController::class, 'destroy'])->name('meal-plan.destroy');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/shopping-list', [ShoppingListController::class, 'index'])->name('shopping-list.index');
 });
 
 // Admin routes
