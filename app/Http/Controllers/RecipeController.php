@@ -4,19 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use App\Models\Category;
-use App\Models\Ingredient;
-use App\Models\Step;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class RecipeController extends Controller {
 
     public function index(Request $request) {
-    $query = Recipe::with('user', 'category')->latest();
+        $query = Recipe::with('user', 'category')->latest();
 
         if ($request->filled('category')) {
-         $query->where('category_id', $request->category);
-    }
+            $query->where('category_id', $request->category);
+        }
 
         $recipes    = $query->paginate(12);
         $categories = Category::all();
@@ -27,7 +25,7 @@ class RecipeController extends Controller {
         $recipe->load('ingredients', 'steps', 'user', 'category', 'reviews.user', 'comments.user');
         $isFavorited = auth()->check() ? $recipe->isFavoritedBy(auth()->user()) : false;
         $userReview  = auth()->check() ? $recipe->userReview() : null;
-         return view('recipes.show', compact('recipe', 'isFavorited', 'userReview'));
+        return view('recipes.show', compact('recipe', 'isFavorited', 'userReview'));
     }
 
     public function create() {
@@ -37,25 +35,22 @@ class RecipeController extends Controller {
 
     public function store(Request $request) {
         $request->validate([
-            'title'          => 'required|string|max:255',
-            'description'    => 'nullable|string',
-            'category_id'    => 'nullable|exists:categories,id',
-            'prep_time'      => 'nullable|integer|min:0',
-            'cook_time'      => 'nullable|integer|min:0',
-            'image'          => 'nullable|image|max:2048',
-            'ingredients'    => 'required|array|min:1',
+            'title'              => 'required|string|max:255',
+            'description'        => 'nullable|string',
+            'category_id'        => 'nullable|exists:categories,id',
+            'prep_time'          => 'nullable|integer|min:0',
+            'cook_time'          => 'nullable|integer|min:0',
+            'image'              => 'nullable|image|max:2048',
+            'ingredients'        => 'required|array|min:1',
             'ingredients.*.name' => 'required|string|max:255',
-            'steps'          => 'required|array|min:1',
-            'steps.*'        => 'required|string',
+            'steps'              => 'required|array|min:1',
+            'steps.*'            => 'required|string',
         ]);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-    $uploadedFile = cloudinary()->upload($request->file('image')->getRealPath(), [
-        'folder' => 'treskudos/recipes'
-    ]);
-    $imagePath = $uploadedFile->getSecurePath();
-}
+            $imagePath = $this->uploadToCloudinary($request->file('image'), 'treskudos/recipes');
+        }
 
         $recipe = auth()->user()->recipes()->create([
             'title'       => $request->title,
@@ -96,24 +91,22 @@ class RecipeController extends Controller {
         $this->authorize('update', $recipe);
 
         $request->validate([
-            'title'          => 'required|string|max:255',
-            'description'    => 'nullable|string',
-            'category_id'    => 'nullable|exists:categories,id',
-            'prep_time'      => 'nullable|integer|min:0',
-            'cook_time'      => 'nullable|integer|min:0',
-            'image'          => 'nullable|image|max:2048',
-            'ingredients'    => 'required|array|min:1',
+            'title'              => 'required|string|max:255',
+            'description'        => 'nullable|string',
+            'category_id'        => 'nullable|exists:categories,id',
+            'prep_time'          => 'nullable|integer|min:0',
+            'cook_time'          => 'nullable|integer|min:0',
+            'image'              => 'nullable|image|max:2048',
+            'ingredients'        => 'required|array|min:1',
             'ingredients.*.name' => 'required|string|max:255',
-            'steps'          => 'required|array|min:1',
-            'steps.*'        => 'required|string',
+            'steps'              => 'required|array|min:1',
+            'steps.*'            => 'required|string',
         ]);
 
-    if ($request->hasFile('image')) {
-    $uploadedFile = cloudinary()->upload($request->file('image')->getRealPath(), [
-        'folder' => 'treskudos/recipes'
-    ]);
-    $recipe->image = $uploadedFile->getSecurePath();
-}
+        if ($request->hasFile('image')) {
+            $uploaded = $this->uploadToCloudinary($request->file('image'), 'treskudos/recipes');
+            if ($uploaded) $recipe->image = $uploaded;
+        }
 
         $recipe->update([
             'title'       => $request->title,
@@ -148,11 +141,31 @@ class RecipeController extends Controller {
 
     public function destroy(Recipe $recipe) {
         $this->authorize('delete', $recipe);
-        if ($recipe->image) {
-            Storage::disk('public')->delete($recipe->image);
-        }
         $recipe->delete();
         return redirect()->route('recipes.index')
             ->with('success', 'Recipe deleted.');
+    }
+
+    private function uploadToCloudinary($file, $folder = 'treskudos') {
+        try {
+            $cloudName = env('CLOUDINARY_CLOUD_NAME');
+            $apiKey    = env('CLOUDINARY_API_KEY');
+            $apiSecret = env('CLOUDINARY_API_SECRET');
+            $timestamp = time();
+            $signature = sha1("folder={$folder}&timestamp={$timestamp}{$apiSecret}");
+
+            $response = Http::attach(
+                'file', file_get_contents($file->getRealPath()), $file->getClientOriginalName()
+            )->post("https://api.cloudinary.com/v1_1/{$cloudName}/image/upload", [
+                'api_key'   => $apiKey,
+                'timestamp' => $timestamp,
+                'signature' => $signature,
+                'folder'    => $folder,
+            ]);
+
+            return $response->json()['secure_url'] ?? null;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }
