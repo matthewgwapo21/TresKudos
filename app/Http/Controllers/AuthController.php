@@ -27,28 +27,28 @@ class AuthController extends Controller {
         ]);
 
         Auth::login($user);
-        return redirect()->route('home');
+        return redirect()->route('recipes.index'); 
     }
 
     public function loginForm() {
         return view('auth.login');
     }
 
-    public function login(Request $request) {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-        ]);
+public function login(Request $request) {
+    $request->validate([
+        'email'    => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('home'));
-        }
-
-        return back()->withErrors([
-            'email' => 'These credentials do not match our records.',
-        ]);
+    if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+        $request->session()->regenerate();
+        return redirect()->route('recipes.index');  // ← change this
     }
+
+    return back()->withErrors([
+        'email' => 'These credentials do not match our records.',
+    ]);
+}
 
     public function logout(Request $request) {
         Auth::logout();
