@@ -162,7 +162,7 @@ public function destroy(Recipe $recipe) {
             $apiKey    = env('CLOUDINARY_API_KEY');
             $apiSecret = env('CLOUDINARY_API_SECRET');
             $timestamp = time();
-            $signature = sha1("folder={$folder}&timestamp={$timestamp}{$apiSecret}");
+            $signature = sha1("folder={$folder}&timestamp={$timestamp}" . $apiSecret);
 
             $response = Http::attach(
                 'file', file_get_contents($file->getRealPath()), $file->getClientOriginalName()
