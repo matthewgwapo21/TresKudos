@@ -13,7 +13,8 @@
                class="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-50 transition-all duration-300">
                 @if($favorite->recipe->image)
                     <div class="overflow-hidden h-52">
-                        <img src="{{ Storage::url($favorite->recipe->image) }}"
+                        @php $imgUrl = str_starts_with($favorite->recipe->image, 'http') ? $favorite->recipe->image : asset('storage/' . $favorite->recipe->image); @endphp
+                        <img src="{{ $imgUrl }}"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                              alt="{{ $favorite->recipe->title }}">
                     </div>

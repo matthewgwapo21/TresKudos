@@ -64,7 +64,8 @@
                         @if($meal)
                             <div class="group">
                                 @if($meal->recipe->image)
-                                    <img src="{{ Storage::url($meal->recipe->image) }}"
+                                @php $imgUrl = str_starts_with($meal->recipe->image, 'http') ? $meal->recipe->image : asset('storage/' . $meal->recipe->image); @endphp
+                                    <img src="{{  $imgUrl }}"
                                          class="w-full h-24 object-cover rounded-xl mb-2" alt="">
                                 @else
                                     <div class="w-full h-24 bg-orange-50 rounded-xl mb-2 flex items-center justify-center text-2xl">🍽️</div>

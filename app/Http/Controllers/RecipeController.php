@@ -51,8 +51,11 @@ class RecipeController extends Controller {
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('recipe-images', 'public');
-        }
+    $uploadedFile = cloudinary()->upload($request->file('image')->getRealPath(), [
+        'folder' => 'treskudos/recipes'
+    ]);
+    $imagePath = $uploadedFile->getSecurePath();
+}
 
         $recipe = auth()->user()->recipes()->create([
             'title'       => $request->title,
@@ -105,12 +108,12 @@ class RecipeController extends Controller {
             'steps.*'        => 'required|string',
         ]);
 
-        if ($request->hasFile('image')) {
-            if ($recipe->image) {
-                Storage::disk('public')->delete($recipe->image);
-            }
-            $recipe->image = $request->file('image')->store('recipe-images', 'public');
-        }
+    if ($request->hasFile('image')) {
+    $uploadedFile = cloudinary()->upload($request->file('image')->getRealPath(), [
+        'folder' => 'treskudos/recipes'
+    ]);
+    $recipe->image = $uploadedFile->getSecurePath();
+}
 
         $recipe->update([
             'title'       => $request->title,

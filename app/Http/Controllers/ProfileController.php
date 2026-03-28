@@ -35,11 +35,11 @@ class ProfileController extends Controller {
         ];
 
         if ($request->hasFile('avatar')) {
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
-        }
+    $uploadedFile = cloudinary()->upload($request->file('avatar')->getRealPath(), [
+        'folder' => 'treskudos/avatars'
+    ]);
+    $data['avatar'] = $uploadedFile->getSecurePath();
+}
 
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);

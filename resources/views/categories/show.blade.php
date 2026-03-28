@@ -13,7 +13,8 @@
             <a href="{{ route('recipes.show', $recipe) }}"
                class="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden">
                 @if($recipe->image)
-                    <img src="{{ Storage::url($recipe->image) }}" class="w-full h-48 object-cover" alt="{{ $recipe->title }}">
+                @php $imgUrl = str_starts_with($recipe->image, 'http') ? $recipe->image : asset('storage/' . $recipe->image); @endphp
+                    <img src="{{ $imgUrl }}" class="w-full h-48 object-cover" alt="{{ $recipe->title }}">
                 @else
                     <div class="w-full h-48 bg-orange-50 flex items-center justify-center text-4xl">🍽️</div>
                 @endif

@@ -64,7 +64,8 @@
                             class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 transition">
                         <!-- Avatar -->
                         @if(auth()->user()->avatar)
-                            <img src="{{ Storage::url(auth()->user()->avatar) }}"
+                        @php $navAvatar = str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . auth()->user()->avatar); @endphp
+                            <img src="{{ $navAvatar }}"
                                  class="w-6 h-6 rounded-full object-cover" alt="">
                         @else
                             <div class="w-6 h-6 rounded-full bg-orange-400 flex items-center justify-center text-xs font-black text-white">

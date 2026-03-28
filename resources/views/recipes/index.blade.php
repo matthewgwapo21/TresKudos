@@ -34,11 +34,7 @@
                
         @if($recipe->image)
     <div class="overflow-hidden h-52">
-        @php
-            $imgUrl = str_starts_with($recipe->image, 'http')
-                ? $recipe->image
-                : asset('storage/' . $recipe->image);
-        @endphp
+       @php $imgUrl = str_starts_with($recipe->image, 'http') ? $recipe->image : asset('storage/' . $recipe->image); @endphp
 
         <img src="{{ $imgUrl }}" alt="Recipe Image" class="w-full h-full object-cover">
     </div>

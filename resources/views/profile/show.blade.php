@@ -9,7 +9,9 @@
         <!-- Avatar -->
         <div class="shrink-0">
             @if($user->avatar)
-                <img src="{{ Storage::url($user->avatar) }}"
+            @php $avatarUrl = str_starts_with($user->avatar, 'http') ? $user->avatar : asset('storage/' . $user->avatar); @endphp
+
+                <img src="$avatarUrl "
                      class="w-24 h-24 rounded-full object-cover border-4 border-orange-100"
                      alt="{{ $user->name }}">
             @else
@@ -55,7 +57,8 @@
                    class="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-50 transition-all duration-300">
                     @if($recipe->image)
                         <div class="overflow-hidden h-48">
-                            <img src="{{ Storage::url($recipe->image) }}"
+                            @php $imgUrl = str_starts_with($recipe->image, 'http') ? $recipe->image : asset('storage/' . $recipe->image); @endphp
+                            <img src="{{ $imgUrl }}"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                  alt="{{ $recipe->title }}">
                         </div>

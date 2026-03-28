@@ -21,7 +21,8 @@
             <h2 class="font-semibold text-gray-900 mb-4">Profile Photo</h2>
             <div class="flex items-center gap-6">
                 @if($user->avatar)
-                    <img src="{{ Storage::url($user->avatar) }}"
+                @php $avatarUrl = str_starts_with($user->avatar, 'http') ? $user->avatar : asset('storage/' . $user->avatar); @endphp
+                    <img src="{{ $avatarUrl }}"
                          class="w-20 h-20 rounded-full object-cover border-4 border-orange-100"
                          alt="{{ $user->name }}">
                 @else

@@ -62,7 +62,8 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Recipe photo</label>
                 @if($recipe->image)
                     <div class="mb-3">
-                        <img src="{{ Storage::url($recipe->image) }}"
+                        @php $imgUrl = str_starts_with($recipe->image, 'http') ? $recipe->image : asset('storage/' . $recipe->image); @endphp
+                        <img src="{{ $imgUrl }}"
                              class="h-32 rounded-xl object-cover" alt="Current photo">
                         <p class="text-xs text-gray-400 mt-1">Current photo — upload a new one to replace it</p>
                     </div>

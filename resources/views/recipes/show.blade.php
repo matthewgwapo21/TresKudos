@@ -12,7 +12,8 @@
     <!-- Image -->
     @if($recipe->image)
         <div class="rounded-2xl overflow-hidden h-80 mb-8">
-            <img src="{{ Storage::url($recipe->image) }}" class="w-full h-full object-cover" alt="{{ $recipe->title }}">
+            @php $imgUrl = str_starts_with($recipe->image, 'http') ? $recipe->image : asset('storage/' . $recipe->image); @endphp
+            <img src="{{ $imgUrl }}" class="w-full h-full object-cover" alt="{{ $recipe->title }}">
         </div>
     @endif
 
