@@ -28,7 +28,6 @@ Route::middleware('guest')->group(function () {
 // Auth required
     Route::middleware('auth')->group(function () {
     // Home and browsing
-  Route::get('/', [RecipeController::class, 'index'])->name('home');
     Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
     Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
     Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
@@ -55,15 +54,27 @@ Route::middleware('guest')->group(function () {
 });
 
 // Admin routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
     Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'index'])->name('dashboard');
+
     Route::get('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('users');
+
+    Route::put('/users/{user}/promote', [\App\Http\Controllers\Admin\AdminUserController::class, 'promote'])->name('users.promote');
+
+    Route::put('/users/{user}/demote', [\App\Http\Controllers\Admin\AdminUserController::class, 'demote'])->name('users.demote');
+
     Route::delete('/recipes/{recipe}', [\App\Http\Controllers\Admin\AdminRecipeController::class, 'destroy'])->name('recipes.destroy');
+
     Route::get('/categories', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'index'])->name('categories.index');
+
     Route::post('/categories', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'store'])->name('categories.store');
+
     Route::put('/categories/{category}', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'update'])->name('categories.update');
-    Route::put('/admin/users/{user}/promote', [\App\Http\Controllers\Admin\AdminUserController::class, 'promote'])->name('admin.users.promote');
-    Route::put('/admin/users/{user}/demote', [\App\Http\Controllers\Admin\AdminUserController::class, 'demote'])->name('admin.users.demote');
+
     Route::delete('/categories/{category}', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'destroy'])->name('categories.destroy');
 });
 
