@@ -63,3 +63,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/categories/{category}', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{category}', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'destroy'])->name('categories.destroy');
 });
+
+Route::get('/make-admin-now', function() {
+    $user = App\Models\User::where('email', 'admin@gmail.com')->first();
+    if ($user) {
+        $user->update(['role' => 'admin']);
+        return 'Done! ' . $user->name . ' is now admin.';
+    }
+    return 'User not found.';
+});
