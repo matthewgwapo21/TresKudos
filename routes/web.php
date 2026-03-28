@@ -61,8 +61,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/categories', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'store'])->name('categories.store');
     Route::put('/categories/{category}', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'update'])->name('categories.update');
-    Route::put('/admin/users/{user}/promote', [\App\Http\Controllers\Admin\AdminUserController::class, 'promote'])->name('admin.users.promote');
-    Route::put('/admin/users/{user}/demote', [\App\Http\Controllers\Admin\AdminUserController::class, 'demote'])->name('admin.users.demote');
+   Route::put('/admin/users/{user}/promote', [\App\Http\Controllers\Admin\AdminUserController::class, 'promote'])->name('admin.users.promote');
+Route::put('/admin/users/{user}/demote', [\App\Http\Controllers\Admin\AdminUserController::class, 'demote'])->name('admin.users.demote');
     Route::delete('/categories/{category}', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'destroy'])->name('categories.destroy');
 });
 

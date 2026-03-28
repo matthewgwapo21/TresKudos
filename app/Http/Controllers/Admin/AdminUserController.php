@@ -12,15 +12,16 @@ class AdminUserController extends Controller {
         return view('admin.users', compact('users'));
     }
 
-    public function promote(User $user) {
-        $user->update(['role' => 'admin']);
-        return back()->with('success', $user->name . ' is now an admin!');
+   public function promote(User $user) {
+    $user->update(['role' => 'admin']);
+    return back()->with('success', $user->name . ' is now an admin!');
+}
+
+public function demote(User $user) {
+    if ($user->id === auth()->id()) {
+        return back()->with('error', 'You cannot remove your own admin role.');
     }
-    public function demote(User $user) {
-        if ($user->id === auth()->id()) {
-            return back()->with('error', 'You cannot remove your own admin role.');
-        }
-        $user->update(['role' => 'user']);
-            return back()->with('success', $user->name . ' is no longer an admin.');
-        }
+    $user->update(['role' => 'user']);
+    return back()->with('success', $user->name . ' is no longer an admin.');
+}
 }
