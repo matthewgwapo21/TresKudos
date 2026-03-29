@@ -235,7 +235,7 @@
         <form method="POST" action="{{ route('comments.store', $recipe) }}" class="flex gap-3">
             @csrf
             @if(auth()->user()->avatar && str_starts_with(auth()->user()->avatar, 'http'))
-                <img src="{{ $auth()->user()->avatar }}"
+                <img src="{{ auth()->user()->avatar }}"
                     class="w-9 h-9 rounded-full object-cover shrink-0" alt="">
             @else
                 <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400 shrink-0">
