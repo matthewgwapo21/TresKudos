@@ -8,17 +8,16 @@
     <div class="bg-white rounded-2xl border border-gray-100 p-8 mb-8 flex items-center gap-8">
         <!-- Avatar -->
         <div class="shrink-0">
-            @if($user->avatar && str_starts_with($user->avatar, 'http'))
-                <img src="$avatarUrl "
-                     class="w-24 h-24 rounded-full object-cover border-4 border-orange-100"
-                     alt="{{ $user->name }}">
-            @else
-                <div class="w-24 h-24 rounded-full bg-orange-100 flex items-center justify-center text-3xl font-black text-orange-400">
-                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                </div>
-            @endif
+    @if($user->avatar && str_starts_with($user->avatar, 'http'))
+        <img src="{{ $user->avatar }}"
+             class="w-24 h-24 rounded-full object-cover border-4 border-orange-100"
+             alt="{{ $user->name }}">
+    @else
+        <div class="w-24 h-24 rounded-full bg-orange-100 flex items-center justify-center text-3xl font-black text-orange-400">
+            {{ strtoupper(substr($user->name, 0, 1)) }}
         </div>
-
+    @endif
+</div>
         <!-- Info -->
         <div class="flex-1">
             <h1 class="brand text-3xl font-black text-gray-900 mb-1">{{ $user->name }}</h1>

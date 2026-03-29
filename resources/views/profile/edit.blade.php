@@ -19,19 +19,19 @@
         <!-- Avatar -->
         <div class="bg-white rounded-2xl border border-gray-100 p-6">
             <h2 class="font-semibold text-gray-900 mb-4">Profile Photo</h2>
-            <div class="flex items-center gap-6">
-                @if($user->avatar && str_starts_with($user->avatar, 'http'))
-                    <img src="{{ $avatarUrl }}"
-                         class="w-20 h-20 rounded-full object-cover border-4 border-orange-100"
-                         alt="{{ $user->name }}">
-                @else
+           <div class="flex items-center gap-6">
+            @if($user->avatar && str_starts_with($user->avatar, 'http'))
+                <img src="{{ $user->avatar }}"
+                    class="w-20 h-20 rounded-full object-cover border-4 border-orange-100"
+                    alt="{{ $user->name }}">
+            @else
                     <div class="w-20 h-20 rounded-full bg-orange-100 flex items-center justify-center text-2xl font-black text-orange-400">
                         {{ strtoupper(substr($user->name, 0, 1)) }}
                     </div>
-                @endif
+            @endif
                 <div class="flex-1">
                     <input type="file" name="avatar" accept="image/*"
-                           class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-500 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100">
+                        class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-500 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100">
                     <p class="text-xs text-gray-400 mt-1">JPG, PNG up to 2MB</p>
                 </div>
             </div>
