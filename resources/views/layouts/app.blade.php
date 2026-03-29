@@ -64,12 +64,12 @@
                             class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 transition">
                         <!-- Avatar -->
                         @if(auth()->user()->avatar && str_starts_with(auth()->user()->avatar, 'http'))
-                            <img src="{{ $navAvatar }}"
+                            <img src="{{ auth()->user()->avatar }}"
                                  class="w-6 h-6 rounded-full object-cover" alt="">
                         @else
-                            <div class="w-6 h-6 rounded-full bg-orange-400 flex items-center justify-center text-xs font-black text-white">
+                        <div class="w-6 h-6 rounded-full bg-orange-400 flex items-center justify-center text-xs font-black text-white">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                            </div>
+                        </div>
                         @endif
                         <span class="text-sm font-medium text-gray-700 hidden md:block max-w-24 truncate">
                             {{ auth()->user()->name }}
