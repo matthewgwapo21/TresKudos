@@ -67,7 +67,13 @@ Route::put('/admin/users/{user}/demote', [\App\Http\Controllers\Admin\AdminUserC
 });
 
 // Public landing page - no auth needed
-Route::get('/', [WelcomeController::class, 'index'])->name('home');
+Route::get('/', function() {
+    if (auth()->check()) {
+        return redirect()->route('recipes.index');
+    }
+    return app(\App\Http\Controllers\WelcomeController::class)->index();
+})->name('home');
+
 Route::get('/make-admin-now', function() {
     $user = App\Models\User::where('email', 'admin@gmail.com')->first();
     if ($user) {

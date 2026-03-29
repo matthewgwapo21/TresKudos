@@ -8,9 +8,7 @@
     <div class="bg-white rounded-2xl border border-gray-100 p-8 mb-8 flex items-center gap-8">
         <!-- Avatar -->
         <div class="shrink-0">
-            @if($user->avatar)
-            @php $avatarUrl = str_starts_with($user->avatar, 'http') ? $user->avatar : asset('storage/' . $user->avatar); @endphp
-
+            @if($user->avatar && str_starts_with($user->avatar, 'http'))
                 <img src="$avatarUrl "
                      class="w-24 h-24 rounded-full object-cover border-4 border-orange-100"
                      alt="{{ $user->name }}">

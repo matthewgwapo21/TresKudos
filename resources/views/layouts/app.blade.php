@@ -23,7 +23,7 @@
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
         <!-- Logo -->
-        <a href="{{ route('home') }}" class="brand text-2xl font-black text-gray-900">
+        <<a href="{{ auth()->check() ? route('recipes.index') : route('home') }}" class="brand text-2xl font-black text-gray-900">
             Tres<span class="text-orange-500">Kudos</span>
         </a>
 
@@ -63,8 +63,7 @@
                     <button onclick="toggleDropdown()"
                             class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 transition">
                         <!-- Avatar -->
-                        @if(auth()->user()->avatar)
-                        @php $navAvatar = str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . auth()->user()->avatar); @endphp
+                        @if(auth()->user()->avatar && str_starts_with(auth()->user()->avatar, 'http'))
                             <img src="{{ $navAvatar }}"
                                  class="w-6 h-6 rounded-full object-cover" alt="">
                         @else
