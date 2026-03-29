@@ -12,8 +12,9 @@
     <!-- Image -->
     @if($recipe->image)
         <div class="rounded-2xl overflow-hidden h-80 mb-8">
-            @php $imgUrl = str_starts_with($recipe->image, 'http') ? $recipe->image : asset('storage/' . $recipe->image); @endphp
-            <img src="{{ $imgUrl }}" class="w-full h-full object-cover" alt="{{ $recipe->title }}">
+           @if(auth()->user()->avatar && str_starts_with(auth()->user()->avatar, 'http'))
+            <img src="{{ auth()->user()->avatar }}"
+             class="w-10 h-10 rounded-full object-cover shrink-0" alt="">
         </div>
     @endif
 
@@ -188,9 +189,9 @@
                 <div class="bg-white rounded-2xl border border-gray-100 p-5">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-3">
-                            @if($review->user->avatar)
-                                <img src="{{ Storage::url($review->user->avatar) }}"
-                                     class="w-9 h-9 rounded-full object-cover" alt="{{ $review->user->name }}">
+                           @if($review->user->avatar && str_starts_with($review->user->avatar, 'http'))
+                                <img src="{{ $review->user->avatar }}"
+                                    class="w-9 h-9 rounded-full object-cover" alt="">
                             @else
                                 <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400">
                                     {{ strtoupper(substr($review->user->name, 0, 1)) }}
@@ -233,9 +234,9 @@
     <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
         <form method="POST" action="{{ route('comments.store', $recipe) }}" class="flex gap-3">
             @csrf
-            @if(auth()->user()->avatar)
-                <img src="{{ Storage::url(auth()->user()->avatar) }}"
-                     class="w-10 h-10 rounded-full object-cover shrink-0" alt="">
+           @if($comment->user->avatar && str_starts_with($comment->user->avatar, 'http'))
+                     <img src="{{ $comment->user->avatar }}"
+                        class="w-9 h-9 rounded-full object-cover shrink-0" alt="">
             @else
                 <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400 shrink-0">
                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
@@ -258,8 +259,8 @@
         <div class="space-y-4">
             @foreach($recipe->comments as $comment)
                 <div class="bg-white rounded-2xl border border-gray-100 p-5 flex gap-4">
-                    @if($comment->user->avatar)
-                        <img src="{{ Storage::url($comment->user->avatar) }}"
+                   @if($comment->user->avatar && str_starts_with($comment->user->avatar, 'http'))
+                        <img src="{{ $comment->user->avatar }}"
                              class="w-9 h-9 rounded-full object-cover shrink-0" alt="">
                     @else
                         <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400 shrink-0">
