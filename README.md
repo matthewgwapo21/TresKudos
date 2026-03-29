@@ -1,59 +1,152 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🍽️ TresKudos — Community Recipe Database
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A full-featured community recipe platform where users can discover, share, and organize recipes. Built with Laravel 12 and deployed on Railway.
 
-## About Laravel
+🌐 **Live Site**: [treskudos.up.railway.app](https://treskudos.up.railway.app)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### For Users
+- 🔐 Register & login (email or Google OAuth)
+- 🍳 Browse and search recipes by category and total time
+- ➕ Submit your own recipes with photos
+- ✏️ Edit and delete your own recipes
+- ❤️ Favorite / bookmark recipes
+- ⭐ Rate and review recipes (1-5 stars)
+- 💬 Comment on recipes
+- 📅 Weekly meal planner (Breakfast, Lunch, Dinner slots)
+- 🛒 Auto-generated shopping list from meal plan
+- 👤 User profile with bio and avatar
 
-## Learning Laravel
+### For Admins
+- 📊 Dashboard with site statistics
+- 👥 View and manage all users (promote/demote admins)
+- 🗂️ Manage categories (add, edit, delete)
+- 🗑️ Delete any recipe
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### API
+- REST API with Laravel Sanctum authentication
+- JSON endpoints for recipes, categories, login, register
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 🛠️ Tech Stack
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Layer | Technology |
+|---|---|
+| Backend | Laravel 12 (PHP 8.2) |
+| Database | MySQL (Railway) |
+| Frontend | Blade Templates + Tailwind CSS |
+| Image Storage | Cloudinary |
+| Authentication | Laravel Auth + Google OAuth (Socialite) |
+| API Auth | Laravel Sanctum |
+| Deployment | Railway |
+| Version Control | GitHub |
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 📸 Screenshots
 
-## Contributing
+> Landing Page, Recipe Browse, Recipe Detail, Meal Planner, Admin Dashboard
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🚀 Local Setup
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Requirements
+- PHP 8.2+
+- Composer
+- MySQL (via XAMPP/phpMyAdmin)
+- Git
 
-## Security Vulnerabilities
+### Steps
+```bash
+# Clone the repo
+git clone https://github.com/matthewgwapo21/TresKudos.git
+cd TresKudos
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Install dependencies
+composer install
 
-## License
+# Set up environment
+copy .env.example .env
+php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Configure your .env
+DB_DATABASE=TresKudos
+DB_USERNAME=root
+DB_PASSWORD=
+
+# Run migrations and seeders
+php artisan migrate
+php artisan db:seed --class=CategorySeeder
+
+# Link storage
+php artisan storage:link
+
+# Start the server
+php artisan serve
+```
+
+Then open `http://127.0.0.1:8000` in your browser.
+
+---
+
+## 🔑 Environment Variables
+```env
+APP_NAME=TresKudos
+APP_ENV=local
+APP_KEY=
+APP_URL=http://localhost
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=TresKudos
+DB_USERNAME=root
+DB_PASSWORD=
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT=http://127.0.0.1:8000/auth/google/callback
+```
+
+---
+
+## 📡 API Endpoints
+
+### Public
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/register` | Register a new user |
+| POST | `/api/login` | Login and get token |
+| GET | `/api/recipes` | Get all recipes |
+| GET | `/api/recipes/{id}` | Get single recipe |
+| GET | `/api/categories` | Get all categories |
+
+### Protected (Bearer Token required)
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/me` | Get current user |
+| POST | `/api/recipes` | Create a recipe |
+| DELETE | `/api/recipes/{id}` | Delete a recipe |
+| POST | `/api/logout` | Logout |
+
+---
+
+## 👨‍💻 Developer
+
+**Adrian Matthew Cortes**
+- GitHub: [@matthewgwapo21](https://github.com/matthewgwapo21)
+
+---
+
+## 📄 License
+
+This project is for educational purposes — 3rd Year BSIT, 2nd Semester 2025-2026.
