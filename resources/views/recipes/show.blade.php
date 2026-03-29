@@ -11,12 +11,11 @@
 
     <!-- Image -->
     @if($recipe->image)
-        <div class="rounded-2xl overflow-hidden h-80 mb-8">
-           @if(auth()->user()->avatar && str_starts_with(auth()->user()->avatar, 'http'))
-            <img src="{{ auth()->user()->avatar }}"
-             class="w-10 h-10 rounded-full object-cover shrink-0" alt="">
-        </div>
-    @endif
+    <div class="rounded-2xl overflow-hidden h-80 mb-8">
+        @php $imgUrl = str_starts_with($recipe->image, 'http') ? $recipe->image : asset('storage/' . $recipe->image); @endphp
+        <img src="{{ $imgUrl }}" class="w-full h-full object-cover" alt="{{ $recipe->title }}">
+    </div>
+@endif
 
     <!-- Header -->
     <div class="flex items-start justify-between mb-6">
@@ -117,6 +116,7 @@
                 </form>
             </div>
         @endif
+     @endauth
         <!-- Reviews section -->
 <div class="mt-10">
     <h2 class="brand text-2xl font-black text-gray-900 mb-6">
@@ -191,9 +191,9 @@
                         <div class="flex items-center gap-3">
                            @if($review->user->avatar && str_starts_with($review->user->avatar, 'http'))
                                 <img src="{{ $review->user->avatar }}"
-                                    class="w-9 h-9 rounded-full object-cover" alt="">
+                                    class="w-9 h-9 rounded-full object-cover shrink-0" alt="">
                             @else
-                                <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400">
+                                <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400 shrink-0">
                                     {{ strtoupper(substr($review->user->name, 0, 1)) }}
                                 </div>
                             @endif
@@ -234,11 +234,11 @@
     <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
         <form method="POST" action="{{ route('comments.store', $recipe) }}" class="flex gap-3">
             @csrf
-           @if($comment->user->avatar && str_starts_with($comment->user->avatar, 'http'))
-                     <img src="{{ $comment->user->avatar }}"
-                        class="w-9 h-9 rounded-full object-cover shrink-0" alt="">
+            @if(auth()->user()->avatar && str_starts_with(auth()->user()->avatar, 'http'))
+                <img src="{{ $auth()->user()->avatar }}"
+                    class="w-9 h-9 rounded-full object-cover shrink-0" alt="">
             @else
-                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400 shrink-0">
+                <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400 shrink-0">
                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                 </div>
             @endif
@@ -259,14 +259,14 @@
         <div class="space-y-4">
             @foreach($recipe->comments as $comment)
                 <div class="bg-white rounded-2xl border border-gray-100 p-5 flex gap-4">
-                   @if($comment->user->avatar && str_starts_with($comment->user->avatar, 'http'))
-                        <img src="{{ $comment->user->avatar }}"
-                             class="w-9 h-9 rounded-full object-cover shrink-0" alt="">
-                    @else
-                        <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400 shrink-0">
-                            {{ strtoupper(substr($comment->user->name, 0, 1)) }}
-                        </div>
-                    @endif
+                  @if($comment->user->avatar && str_starts_with($comment->user->avatar, 'http'))
+                    <img src="{{ $comment->user->avatar }}"
+                        class="w-9 h-9 rounded-full object-cover shrink-0" alt="">
+                @else
+                <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-sm font-black text-orange-400 shrink-0">
+                    {{ strtoupper(substr($comment->user->name, 0, 1)) }}
+                </div>
+                @endif
                     <div class="flex-1">
                         <div class="flex items-center justify-between mb-1">
                             <div class="flex items-center gap-2">
@@ -302,7 +302,7 @@ function setRating(value) {
     });
 }
 </script>
-    @endauth
+   
 
 </div>
 @endsection
