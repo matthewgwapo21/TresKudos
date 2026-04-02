@@ -7,6 +7,16 @@
     <div class="flex gap-3">
         <a href="{{ route('admin.users') }}" class="bg-white border px-4 py-2 rounded-lg text-sm hover:border-orange-400">Manage Users</a>
         <a href="{{ route('admin.categories.index') }}" class="bg-white border px-4 py-2 rounded-lg text-sm hover:border-orange-400">Manage Categories</a>
+        <a href="{{ route('admin.recipes.pending') }}"
+   class="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-600 relative">
+    Pending Recipes
+    @php $pendingCount = \App\Models\Recipe::pending()->count(); @endphp
+    @if($pendingCount)
+        <span class="ml-1 bg-white text-orange-500 text-xs font-bold px-1.5 py-0.5 rounded-full">
+            {{ $pendingCount }}
+        </span>
+    @endif
+</a>
     </div>
 </div>
 

@@ -6,43 +6,27 @@ use App\Models\Recipe;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Helpers\NotificationHelper;
+use App\Models\User;
 
 class RecipeController extends Controller {
 
-   public function index(Request $request) {
-    $query = Recipe::with('user', 'category')->latest();
-
-    if ($request->filled('q')) {
-        $term = $request->q;
-        $query->where(function($q) use ($term) {
-            $q->where('title', 'like', "%{$term}%")
-              ->orWhere('description', 'like', "%{$term}%");
-        });
-    }
-
+  public function index(Request $request) {
+    $query = Recipe::with('user', 'category')->approved()->latest();
     if ($request->filled('category')) {
         $query->where('category_id', $request->category);
     }
-
-    if ($request->filled('prep_time')) {
-        $query->whereRaw('(prep_time + cook_time) <= ?', [(int) $request->prep_time]);
-    }
-
-    if ($request->filled('sort') && $request->sort === 'oldest') {
-        $query->reorder('created_at', 'asc');
-    }
-
-    $recipes    = $query->paginate(12)->withQueryString();
+    $recipes    = $query->paginate(12);
     $categories = Category::all();
     return view('recipes.index', compact('recipes', 'categories'));
-}
-public function edit(Recipe $recipe) {
+    }
+    public function edit(Recipe $recipe) {
     if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
         abort(403);
     }
     $categories = Category::all();
     return view('recipes.edit', compact('recipe', 'categories'));
-}
+    }
 
     public function update(Request $request, Recipe $recipe) {
          if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
@@ -67,14 +51,29 @@ public function edit(Recipe $recipe) {
             if ($uploaded) $recipe->image = $uploaded;
         }
 
-        $recipe->update([
-            'title'       => $request->title,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'prep_time'   => $request->prep_time,
-            'cook_time'   => $request->cook_time,
-            'image'       => $recipe->image,
+        $recipe = auth()->user()->recipes()->create([
+         'title'       => $request->title,
+        'description' => $request->description,
+        'category_id' => $request->category_id,
+        'prep_time'   => $request->prep_time,
+        'cook_time'   => $request->cook_time,
+        'image'       => $imagePath,
+        'status'      => 'pending',
         ]);
+
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+        NotificationHelper::send(
+        $admin->id,
+        'recipe',
+        'New recipe pending approval!',
+        auth()->user()->name . ' submitted "' . $recipe->title . '" for approval.',
+        route('admin.recipes.pending')
+    );
+}
+
+        return redirect()->route('profile.show')
+            ->with('success', 'Recipe submitted! Waiting for admin approval.');
 
         $recipe->ingredients()->delete();
         foreach ($request->ingredients as $i => $ing) {
@@ -98,7 +97,7 @@ public function edit(Recipe $recipe) {
             ->with('success', 'Recipe updated successfully!');
     }
 
-public function destroy(Recipe $recipe) {
+    public function destroy(Recipe $recipe) {
     if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
         abort(403);
     }
@@ -110,7 +109,7 @@ public function destroy(Recipe $recipe) {
     $recipe->delete();
     return redirect()->route('recipes.index')
         ->with('success', 'Recipe deleted.');
-}
+    }
 
     private function uploadToCloudinary($file, $folder = 'treskudos') {
         try {

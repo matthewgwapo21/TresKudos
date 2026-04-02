@@ -16,6 +16,7 @@ class Recipe extends Model {
         'image',
         'prep_time',
         'cook_time',
+        'status'
     ];
 
     public function user() {
@@ -59,5 +60,12 @@ class Recipe extends Model {
         }
     public function comments() {
         return $this->hasMany(Comment::class)->latest();
+    }
+    public function scopeApproved($query) {
+    return $query->where('status', 'approved');
+    }
+
+    public function scopePending($query) {
+        return $query->where('status', 'pending');
     }
 }

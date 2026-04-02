@@ -94,4 +94,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/categories', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'store'])->name('categories.store');
     Route::put('/categories/{category}', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{category}', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+    Route::get('/recipes/pending', [\App\Http\Controllers\Admin\AdminRecipeApprovalController::class, 'pending'])->name('admin.recipes.pending');
+    Route::put('/recipes/{recipe}/approve', [\App\Http\Controllers\Admin\AdminRecipeApprovalController::class, 'approve'])->name('admin.recipes.approve');
+    Route::put('/recipes/{recipe}/reject', [\App\Http\Controllers\Admin\AdminRecipeApprovalController::class, 'reject'])->name('admin.recipes.reject');
 });
