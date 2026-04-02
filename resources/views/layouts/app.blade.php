@@ -27,7 +27,7 @@
             Tres<span class="text-orange-500">Kudos</span>
         </a>
 
-        <!-- Center links 
+        <!-- Center links -->
 <div class="hidden md:flex items-center gap-6">
     @auth
         <a href="{{ route('recipes.index') }}"
@@ -38,7 +38,7 @@
            class="text-sm text-gray-500 hover:text-gray-900 transition {{ request()->routeIs('search') ? 'text-gray-900 font-medium' : '' }}">
             Search
         </a>
-    @endauth -->
+    @endauth 
 </div>
 
         <!-- Right side -->
