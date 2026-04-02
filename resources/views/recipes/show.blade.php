@@ -22,7 +22,7 @@
         <div>
             <h1 class="brand text-4xl font-black text-gray-900 mb-2">{{ $recipe->title }}</h1>
             <div class="flex items-center gap-3 text-sm text-gray-400">
-                <span>by <strong class="text-gray-600">{{ $recipe->user->name }}</strong></span>
+                <span>by <strong class="text-gray-600">{{ $recipe->user->name }} · {{ $recipe->created_at->format('M d, Y') }}</strong></span>
                 @if($recipe->category)
                     <span class="bg-orange-50 text-orange-500 px-3 py-1 rounded-full font-medium text-xs">
                         {{ $recipe->category->name }}
@@ -223,12 +223,22 @@
 </div>
 <!-- Comments section -->
 <div class="mt-10">
-    <h2 class="brand text-2xl font-black text-gray-900 mb-6">
-        Comments
-        @if($recipe->comments->count())
-            <span class="text-gray-300 text-lg font-normal">({{ $recipe->comments->count() }})</span>
-        @endif
-    </h2>
+   <h2 class="brand text-2xl font-black text-gray-900 mb-4">
+    Comments
+    @if($comments->count())
+        <span class="text-gray-300 text-lg font-normal">({{ $recipe->comments->count() }})</span>
+    @endif
+</h2>
+<div class="flex gap-2 mb-6">
+    <a href="{{ request()->fullUrlWithQuery(['comment_sort' => 'latest']) }}"
+       class="px-3 py-1 rounded-full text-xs font-medium {{ request('comment_sort', 'latest') === 'latest' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-500' }}">
+        Latest
+    </a>
+    <a href="{{ request()->fullUrlWithQuery(['comment_sort' => 'oldest']) }}"
+       class="px-3 py-1 rounded-full text-xs font-medium {{ request('comment_sort') === 'oldest' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-500' }}">
+        Oldest
+    </a>
+</div>
 
     <!-- Post comment form -->
     <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
@@ -255,9 +265,9 @@
     </div>
 
     <!-- Comment list -->
-    @if($recipe->comments->count())
+    
         <div class="space-y-4">
-            @foreach($recipe->comments as $comment)
+            @foreach($comments as $comment)
                 <div class="bg-white rounded-2xl border border-gray-100 p-5 flex gap-4">
                   @if($comment->user->avatar && str_starts_with($comment->user->avatar, 'http'))
                     <img src="{{ $comment->user->avatar }}"

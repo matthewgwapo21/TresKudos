@@ -44,7 +44,7 @@
                 @endif
                 <div class="p-5">
                     <h2 class="font-semibold text-gray-900 text-lg mb-1 group-hover:text-orange-500 transition">
-                        {{ $recipe->title }}
+                        {{ $recipe->title }} · {{ $recipe->created_at->format('M d, Y') }}
                     </h2>
                     <p class="text-gray-400 text-sm line-clamp-2 mb-4">{{ $recipe->description }}</p>
                     <div class="flex items-center gap-3 text-xs text-gray-400">

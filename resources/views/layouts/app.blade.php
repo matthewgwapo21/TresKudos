@@ -38,14 +38,6 @@
                    class="text-sm text-gray-500 hover:text-gray-900 transition {{ request()->routeIs('search') ? 'text-gray-900 font-medium' : '' }}">
                     Search
                 </a>
-                <a href="{{ route('meal-plan.index') }}"
-                   class="text-sm text-gray-500 hover:text-gray-900 transition {{ request()->routeIs('meal-plan.*') ? 'text-gray-900 font-medium' : '' }}">
-                    Meal Plan
-                </a>
-                <a href="{{ route('shopping-list.index') }}"
-                   class="text-sm text-gray-500 hover:text-gray-900 transition {{ request()->routeIs('shopping-list.*') ? 'text-gray-900 font-medium' : '' }}">
-                    Shopping List
-                </a>
             @endauth
         </div>
 

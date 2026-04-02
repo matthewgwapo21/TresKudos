@@ -21,12 +21,16 @@ class RecipeController extends Controller {
         return view('recipes.index', compact('recipes', 'categories'));
     }
 
-    public function show(Recipe $recipe) {
-        $recipe->load('ingredients', 'steps', 'user', 'category', 'reviews.user', 'comments.user');
-        $isFavorited = auth()->check() ? $recipe->isFavoritedBy(auth()->user()) : false;
-        $userReview  = auth()->check() ? $recipe->userReview() : null;
-        return view('recipes.show', compact('recipe', 'isFavorited', 'userReview'));
-    }
+    public function show(Recipe $recipe, Request $request) {
+    $commentSort = $request->get('comment_sort', 'latest');
+    $recipe->load('ingredients', 'steps', 'user', 'category', 'reviews.user');
+    $comments = $recipe->comments()->with('user')
+        ->orderBy('created_at', $commentSort === 'oldest' ? 'asc' : 'desc')
+        ->get();
+    $isFavorited = auth()->check() ? $recipe->isFavoritedBy(auth()->user()) : false;
+    $userReview  = auth()->check() ? $recipe->userReview() : null;
+    return view('recipes.show', compact('recipe', 'isFavorited', 'userReview', 'comments'));
+}
 
     public function create() {
         $categories = Category::all();

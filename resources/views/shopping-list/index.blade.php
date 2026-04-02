@@ -47,6 +47,17 @@
             </button>
         </div>
 
+        <!-- Meal filter -->
+        <div class="flex gap-2 mb-6 flex-wrap">
+            @foreach(['all' => 'All Meals', 'breakfast' => '🌅 Breakfast', 'lunch' => '☀️ Lunch', 'dinner' => '🌙 Dinner'] as $value => $label)
+                <a href="{{ request()->fullUrlWithQuery(['meal_filter' => $value]) }}"
+                    class="px-4 py-1.5 rounded-full text-sm font-medium transition
+                        {{ $mealFilter === $value ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-orange-300' }}">
+                    {{ $label }}
+                </a>
+            @endforeach
+        </div>
+
         <!-- Meals this week -->
         <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
             <h2 class="font-semibold text-gray-900 mb-4">Meals this week</h2>
@@ -97,7 +108,7 @@
                 @endforeach
             </ul>
         </div>
-
+        <div class="mt-6">{{ $paginator->links() }}</div>
     @endif
 </div>
 
