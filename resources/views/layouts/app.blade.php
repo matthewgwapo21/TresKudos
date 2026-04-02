@@ -34,10 +34,7 @@
                    class="text-sm text-gray-500 hover:text-gray-900 transition {{ request()->routeIs('recipes.*') ? 'text-gray-900 font-medium' : '' }}">
                     Browse
                 </a>
-                <a href="{{ route('search') }}"
-                   class="text-sm text-gray-500 hover:text-gray-900 transition {{ request()->routeIs('search') ? 'text-gray-900 font-medium' : '' }}">
-                    Search
-                </a>
+                
             @endauth
         </div>
 
@@ -93,11 +90,11 @@
                                 <span class="text-base">❤️</span> Favorites
                             </a>
                             <a href="{{ route('meal-plan.index') }}"
-                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition md:hidden">
+                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition">
                                 <span class="text-base">📅</span> Meal Plan
                             </a>
                             <a href="{{ route('shopping-list.index') }}"
-                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition md:hidden">
+                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition">
                                 <span class="text-base">🛒</span> Shopping List
                             </a>
                             <a href="{{ route('recipes.create') }}"

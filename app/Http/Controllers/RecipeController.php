@@ -9,81 +9,33 @@ use Illuminate\Support\Facades\Http;
 
 class RecipeController extends Controller {
 
-    public function index(Request $request) {
-        $query = Recipe::with('user', 'category')->latest();
+   public function index(Request $request) {
+    $query = Recipe::with('user', 'category')->latest();
 
-        if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
-        }
-
-        $recipes    = $query->paginate(12);
-        $categories = Category::all();
-        return view('recipes.index', compact('recipes', 'categories'));
+    if ($request->filled('q')) {
+        $term = $request->q;
+        $query->where(function($q) use ($term) {
+            $q->where('title', 'like', "%{$term}%")
+              ->orWhere('description', 'like', "%{$term}%");
+        });
     }
 
-    public function show(Recipe $recipe, Request $request) {
-    $commentSort = $request->get('comment_sort', 'latest');
-    $recipe->load('ingredients', 'steps', 'user', 'category', 'reviews.user');
-    $comments = $recipe->comments()->with('user')
-        ->orderBy('created_at', $commentSort === 'oldest' ? 'asc' : 'desc')
-        ->get();
-    $isFavorited = auth()->check() ? $recipe->isFavoritedBy(auth()->user()) : false;
-    $userReview  = auth()->check() ? $recipe->userReview() : null;
-    return view('recipes.show', compact('recipe', 'isFavorited', 'userReview', 'comments'));
+    if ($request->filled('category')) {
+        $query->where('category_id', $request->category);
+    }
+
+    if ($request->filled('prep_time')) {
+        $query->whereRaw('(prep_time + cook_time) <= ?', [(int) $request->prep_time]);
+    }
+
+    if ($request->filled('sort') && $request->sort === 'oldest') {
+        $query->reorder('created_at', 'asc');
+    }
+
+    $recipes    = $query->paginate(12)->withQueryString();
+    $categories = Category::all();
+    return view('recipes.index', compact('recipes', 'categories'));
 }
-
-    public function create() {
-        $categories = Category::all();
-        return view('recipes.create', compact('categories'));
-    }
-
-    public function store(Request $request) {
-        $request->validate([
-            'title'              => 'required|string|max:255',
-            'description'        => 'nullable|string',
-            'category_id'        => 'nullable|exists:categories,id',
-            'prep_time'          => 'nullable|integer|min:0',
-            'cook_time'          => 'nullable|integer|min:0',
-            'image'              => 'nullable|image|max:2048',
-            'ingredients'        => 'required|array|min:1',
-            'ingredients.*.name' => 'required|string|max:255',
-            'steps'              => 'required|array|min:1',
-            'steps.*'            => 'required|string',
-        ]);
-
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $this->uploadToCloudinary($request->file('image'), 'treskudos/recipes');
-        }
-
-        $recipe = auth()->user()->recipes()->create([
-            'title'       => $request->title,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'prep_time'   => $request->prep_time,
-            'cook_time'   => $request->cook_time,
-            'image'       => $imagePath,
-        ]);
-
-        foreach ($request->ingredients as $i => $ing) {
-            $recipe->ingredients()->create([
-                'name'        => $ing['name'],
-                'quantity'    => $ing['quantity'] ?? null,
-                'unit'        => $ing['unit'] ?? null,
-                'order_index' => $i,
-            ]);
-        }
-
-        foreach ($request->steps as $i => $step) {
-            $recipe->steps()->create([
-                'step_number' => $i + 1,
-                'body'        => $step,
-            ]);
-        }
-
-        return redirect()->route('recipes.show', $recipe)
-            ->with('success', 'Recipe published successfully!');
-    }
 public function edit(Recipe $recipe) {
     if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
         abort(403);

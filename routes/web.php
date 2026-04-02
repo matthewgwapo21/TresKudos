@@ -46,7 +46,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
 
     // Search & categories
-    Route::get('/search', [SearchController::class, 'index'])->name('search');
+    Route::get('/search', function() {
+    return redirect()->route('recipes.index', request()->all());
+})->name('search');
     Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 
     // Favorites
