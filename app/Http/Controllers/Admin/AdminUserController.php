@@ -15,6 +15,14 @@ class AdminUserController extends Controller {
    public function promote(User $user) {
     $user->update(['role' => 'admin']);
     return back()->with('success', $user->name . ' is now an admin!');
+    NotificationHelper::send(
+    $user->id,
+    'admin',
+    'You are now an Admin!',
+    'Congratulations! You have been granted admin privileges on TresKudos.',
+    route('admin.dashboard')
+);
+
 }
 
 public function demote(User $user) {
@@ -23,5 +31,13 @@ public function demote(User $user) {
     }
     $user->update(['role' => 'user']);
     return back()->with('success', $user->name . ' is no longer an admin.');
+
+    NotificationHelper::send(
+    $user->id,
+    'admin',
+    'Admin privileges removed',
+    'Your admin privileges on TresKudos have been removed.',
+    route('home')
+);
 }
 }

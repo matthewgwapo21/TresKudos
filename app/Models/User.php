@@ -46,4 +46,11 @@ class User extends Authenticatable {
     public function mealPlans() {
         return $this->hasMany(MealPlan::class);
     }
+    public function notifications() {
+    return $this->hasMany(Notification::class)->latest();
+}
+
+public function unreadNotifications() {
+    return $this->notifications()->where('is_read', false);
+}
 }

@@ -8,10 +8,7 @@
         <h1 class="brand text-5xl font-black text-gray-900 mb-1">Browse <span class="text-orange-500">Recipes</span></h1>
         <p class="text-gray-400">Discover dishes from our community of home chefs</p>
     </div>
-    <a href="{{ route('recipes.create') }}"
-       class="btn-primary text-white text-sm font-medium px-5 py-2.5 rounded-xl hidden md:block">
-        + Add Recipe
-    </a>
+    
 </div>
 
 <!-- Search + Filters -->

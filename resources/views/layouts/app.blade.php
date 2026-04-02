@@ -28,15 +28,19 @@
         </a>
 
         <!-- Center links -->
-        <div class="hidden md:flex items-center gap-6">
-            @auth
-                <a href="{{ route('recipes.index') }}"
-                   class="text-sm text-gray-500 hover:text-gray-900 transition {{ request()->routeIs('recipes.*') ? 'text-gray-900 font-medium' : '' }}">
-                    Browse
-                </a>
-                
-            @endauth
-        </div>
+        <!-- Center links -->
+<div class="hidden md:flex items-center gap-6">
+    @auth
+        <a href="{{ route('recipes.index') }}"
+           class="text-sm text-gray-500 hover:text-gray-900 transition {{ request()->routeIs('recipes.*') ? 'text-gray-900 font-medium' : '' }}">
+            Browse
+        </a>
+        <a href="{{ route('search') }}"
+           class="text-sm text-gray-500 hover:text-gray-900 transition {{ request()->routeIs('search') ? 'text-gray-900 font-medium' : '' }}">
+            Search
+        </a>
+    @endauth
+</div>
 
         <!-- Right side -->
         <div class="flex items-center gap-3">

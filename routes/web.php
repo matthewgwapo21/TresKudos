@@ -13,6 +13,7 @@ use App\Http\Controllers\MealPlanController;
 use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\NotificationController;
 
 // Landing page
 Route::get('/', function() {
@@ -35,6 +36,11 @@ Route::middleware('guest')->group(function () {
 // Auth required
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    //Notifications
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // Recipes
     Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');

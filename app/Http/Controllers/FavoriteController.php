@@ -30,6 +30,13 @@ class FavoriteController extends Controller {
                 'user_id'   => auth()->id(),
                 'recipe_id' => $recipe->id,
             ]);
+            NotificationHelper::send(
+             $recipe->user_id,
+            'favorite',
+            'Someone favorited your recipe!',
+            auth()->user()->name . ' added "' . $recipe->title . '" to their favorites.',
+            route('recipes.show', $recipe)
+            );
             $message = 'Added to favorites!';
         }
 
