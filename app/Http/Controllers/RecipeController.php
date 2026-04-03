@@ -4,34 +4,122 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use App\Models\Category;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use App\Helpers\NotificationHelper;
 use App\Models\User;
+use App\Helpers\NotificationHelper;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class RecipeController extends Controller {
 
-  public function index(Request $request) {
-    $query = Recipe::with('user', 'category')->approved()->latest();
-    if ($request->filled('category')) {
-        $query->where('category_id', $request->category);
+    public function index(Request $request) {
+        $query = Recipe::with('user', 'category')->approved()->latest();
+
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->filled('sort') && $request->sort === 'oldest') {
+            $query = Recipe::with('user', 'category')->approved()->oldest();
+            if ($request->filled('category')) {
+                $query->where('category_id', $request->category);
+            }
+        }
+
+        $recipes    = $query->paginate(12);
+        $categories = Category::all();
+        return view('recipes.index', compact('recipes', 'categories'));
     }
-    $recipes    = $query->paginate(12);
-    $categories = Category::all();
-    return view('recipes.index', compact('recipes', 'categories'));
+
+    public function show(Recipe $recipe, Request $request) {
+        $commentSort = $request->get('comment_sort', 'latest');
+        $recipe->load('ingredients', 'steps', 'user', 'category', 'reviews.user');
+        $comments = $recipe->comments()->with('user')
+            ->orderBy('created_at', $commentSort === 'oldest' ? 'asc' : 'desc')
+            ->get();
+        $isFavorited = auth()->check() ? $recipe->isFavoritedBy(auth()->user()) : false;
+        $userReview  = auth()->check() ? $recipe->userReview() : null;
+        return view('recipes.show', compact('recipe', 'isFavorited', 'userReview', 'comments'));
     }
+
+    public function create() {
+        $categories = Category::all();
+        return view('recipes.create', compact('categories'));
+    }
+
+    public function store(Request $request) {
+        $request->validate([
+            'title'              => 'required|string|max:255',
+            'description'        => 'nullable|string',
+            'category_id'        => 'nullable|exists:categories,id',
+            'prep_time'          => 'nullable|integer|min:0',
+            'cook_time'          => 'nullable|integer|min:0',
+            'image'              => 'nullable|image|max:2048',
+            'ingredients'        => 'required|array|min:1',
+            'ingredients.*.name' => 'required|string|max:255',
+            'steps'              => 'required|array|min:1',
+            'steps.*'            => 'required|string',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $this->uploadToCloudinary($request->file('image'));
+        }
+
+        $recipe = auth()->user()->recipes()->create([
+            'title'       => $request->title,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'prep_time'   => $request->prep_time,
+            'cook_time'   => $request->cook_time,
+            'image'       => $imagePath,
+            'status'      => 'pending',
+        ]);
+
+        foreach ($request->ingredients as $i => $ing) {
+            $recipe->ingredients()->create([
+                'name'        => $ing['name'],
+                'quantity'    => $ing['quantity'] ?? null,
+                'unit'        => $ing['unit'] ?? null,
+                'order_index' => $i,
+            ]);
+        }
+
+        foreach ($request->steps as $i => $step) {
+            $recipe->steps()->create([
+                'step_number' => $i + 1,
+                'body'        => $step,
+            ]);
+        }
+
+        // Notify all admins
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            NotificationHelper::send(
+                $admin->id,
+                'recipe',
+                'New recipe pending approval!',
+                auth()->user()->name . ' submitted "' . $recipe->title . '" for approval.',
+                route('admin.recipes.pending')
+            );
+        }
+
+        return redirect()->route('profile.show')
+            ->with('success', 'Recipe submitted! Waiting for admin approval.');
+    }
+
     public function edit(Recipe $recipe) {
-    if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
-        abort(403);
-    }
-    $categories = Category::all();
-    return view('recipes.edit', compact('recipe', 'categories'));
+        if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
+            abort(403);
+        }
+        $categories = Category::all();
+        return view('recipes.edit', compact('recipe', 'categories'));
     }
 
     public function update(Request $request, Recipe $recipe) {
-         if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
-        abort(403);
-    }
+        if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
+            abort(403);
+        }
 
         $request->validate([
             'title'              => 'required|string|max:255',
@@ -47,33 +135,18 @@ class RecipeController extends Controller {
         ]);
 
         if ($request->hasFile('image')) {
-            $uploaded = $this->uploadToCloudinary($request->file('image'), 'treskudos/recipes');
+            $uploaded = $this->uploadToCloudinary($request->file('image'));
             if ($uploaded) $recipe->image = $uploaded;
         }
 
-        $recipe = auth()->user()->recipes()->create([
-         'title'       => $request->title,
-        'description' => $request->description,
-        'category_id' => $request->category_id,
-        'prep_time'   => $request->prep_time,
-        'cook_time'   => $request->cook_time,
-        'image'       => $imagePath,
-        'status'      => 'pending',
+        $recipe->update([
+            'title'       => $request->title,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'prep_time'   => $request->prep_time,
+            'cook_time'   => $request->cook_time,
+            'image'       => $recipe->image,
         ]);
-
-        $admins = User::where('role', 'admin')->get();
-        foreach ($admins as $admin) {
-        NotificationHelper::send(
-        $admin->id,
-        'recipe',
-        'New recipe pending approval!',
-        auth()->user()->name . ' submitted "' . $recipe->title . '" for approval.',
-        route('admin.recipes.pending')
-    );
-}
-
-        return redirect()->route('profile.show')
-            ->with('success', 'Recipe submitted! Waiting for admin approval.');
 
         $recipe->ingredients()->delete();
         foreach ($request->ingredients as $i => $ing) {
@@ -98,20 +171,18 @@ class RecipeController extends Controller {
     }
 
     public function destroy(Recipe $recipe) {
-    if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
-        abort(403);
-    }
-    if ($recipe->image && str_starts_with($recipe->image, 'http')) {
-        // Cloudinary image — no need to delete locally
-    } elseif ($recipe->image) {
-        Storage::disk('public')->delete($recipe->image);
-    }
-    $recipe->delete();
-    return redirect()->route('recipes.index')
-        ->with('success', 'Recipe deleted.');
+        if (auth()->id() !== $recipe->user_id && !auth()->user()->isAdmin()) {
+            abort(403);
+        }
+        if ($recipe->image && !str_starts_with($recipe->image, 'http')) {
+            Storage::disk('public')->delete($recipe->image);
+        }
+        $recipe->delete();
+        return redirect()->route('recipes.index')
+            ->with('success', 'Recipe deleted.');
     }
 
-    private function uploadToCloudinary($file, $folder = 'treskudos') {
+    private function uploadToCloudinary($file, $folder = 'treskudos/recipes') {
         try {
             $cloudName = env('CLOUDINARY_CLOUD_NAME');
             $apiKey    = env('CLOUDINARY_API_KEY');
