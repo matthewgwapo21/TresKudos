@@ -265,7 +265,7 @@
     </div>
 
     <!-- Comment list -->
-    
+    @if($comments->count())
         <div class="space-y-4">
             @foreach($comments as $comment)
                 <div class="bg-white rounded-2xl border border-gray-100 p-5 flex gap-4">
