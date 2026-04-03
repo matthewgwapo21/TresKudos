@@ -18,41 +18,32 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
+
 <!-- Navbar -->
 <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
         <!-- Logo -->
-        <<a href="{{ auth()->check() ? route('recipes.index') : route('home') }}" class="brand text-2xl font-black text-gray-900">
+        <a href="{{ auth()->check() ? route('recipes.index') : route('home') }}"
+           class="brand text-2xl font-black text-gray-900">
             Tres<span class="text-orange-500">Kudos</span>
         </a>
-
-        <!-- Center links -->
-<div class="hidden md:flex items-center gap-6">
-    @auth
-        <a href="{{ route('recipes.index') }}"
-           class="text-sm text-gray-500 hover:text-gray-900 transition {{ request()->routeIs('recipes.*') ? 'text-gray-900 font-medium' : '' }}">
-            Browse
-        </a>
-        
-    @endauth 
-</div>
 
         <!-- Right side -->
         <div class="flex items-center gap-3">
             @auth
-
-              <!-- Notification bell -->
+                <!-- Notification bell -->
                 <a href="{{ route('notifications.index') }}" class="relative text-gray-500 hover:text-orange-500 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                     </svg>
-                        @if(auth()->user()->unreadNotifications()->count())
-                    <span class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                        {{ auth()->user()->unreadNotifications()->count() > 9 ? '9+' : auth()->user()->unreadNotifications()->count() }}
-                    </span>
-                        @endif
+                    @if(auth()->user()->unreadNotifications()->count())
+                        <span class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                            {{ auth()->user()->unreadNotifications()->count() > 9 ? '9+' : auth()->user()->unreadNotifications()->count() }}
+                        </span>
+                    @endif
                 </a>
+
                 <!-- Add Recipe button -->
                 <a href="{{ route('recipes.create') }}"
                    class="btn-primary text-white text-sm font-medium px-5 py-2 rounded-xl hidden md:block">
@@ -63,19 +54,17 @@
                 <div class="relative" id="user-menu">
                     <button onclick="toggleDropdown()"
                             class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 transition">
-                        <!-- Avatar -->
                         @if(auth()->user()->avatar && str_starts_with(auth()->user()->avatar, 'http'))
                             <img src="{{ auth()->user()->avatar }}"
                                  class="w-6 h-6 rounded-full object-cover" alt="">
                         @else
-                        <div class="w-6 h-6 rounded-full bg-orange-400 flex items-center justify-center text-xs font-black text-white">
+                            <div class="w-6 h-6 rounded-full bg-orange-400 flex items-center justify-center text-xs font-black text-white">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                        </div>
+                            </div>
                         @endif
                         <span class="text-sm font-medium text-gray-700 hidden md:block max-w-24 truncate">
                             {{ auth()->user()->name }}
                         </span>
-                        <!-- Chevron -->
                         <svg class="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -91,8 +80,16 @@
                             <p class="text-xs text-gray-400 truncate">{{ auth()->user()->email }}</p>
                         </div>
 
-                        <!-- Links -->
+                        <!-- Main links -->
                         <div class="py-1">
+                            <a href="{{ route('recipes.index') }}"
+                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition">
+                                <span class="text-base">🍽️</span> Browse Recipes
+                            </a>
+                            <a href="{{ route('search') }}"
+                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition">
+                                <span class="text-base">🔍</span> Search
+                            </a>
                             <a href="{{ route('profile.show') }}"
                                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition">
                                 <span class="text-base">👤</span> My Profile
@@ -109,13 +106,13 @@
                                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition">
                                 <span class="text-base">🛒</span> Shopping List
                             </a>
+                            <a href="{{ route('forum.index') }}"
+                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition">
+                                <span class="text-base">💬</span> Forum
+                            </a>
                             <a href="{{ route('recipes.create') }}"
                                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition md:hidden">
                                 <span class="text-base">➕</span> Add Recipe
-                            </a>
-                            <a href="{{ route('forum.index') }}"
-                                 class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition">
-                                <span class="text-base">💬</span> Forum
                             </a>
                         </div>
 
@@ -155,7 +152,6 @@
 function toggleDropdown() {
     document.getElementById('dropdown-menu').classList.toggle('hidden');
 }
-
 document.addEventListener('click', function(e) {
     const menu = document.getElementById('user-menu');
     if (menu && !menu.contains(e.target)) {
@@ -163,7 +159,6 @@ document.addEventListener('click', function(e) {
     }
 });
 </script>
-
     <!-- Flash messages -->
     @if(session('success'))
         <div class="max-w-7xl mx-auto px-6 mt-4 w-full">
