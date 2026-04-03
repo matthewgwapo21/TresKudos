@@ -53,4 +53,7 @@ class User extends Authenticatable {
 public function unreadNotifications() {
     return $this->notifications()->where('is_read', false);
 }
+public function forumTopics() {
+    return $this->hasMany(ForumTopic::class);
+}
 }

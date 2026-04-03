@@ -14,6 +14,7 @@ use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ForumController;
 
 // Landing page
 Route::get('/', function() {
@@ -36,6 +37,14 @@ Route::middleware('guest')->group(function () {
 // Auth required
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
+    Route::get('/forum/create', [ForumController::class, 'create'])->name('forum.create');
+    Route::post('/forum', [ForumController::class, 'store'])->name('forum.store');
+    Route::get('/forum/{topic}', [ForumController::class, 'show'])->name('forum.show');
+    Route::post('/forum/{topic}/reply', [ForumController::class, 'reply'])->name('forum.reply');
+    Route::delete('/forum/{topic}', [ForumController::class, 'destroy'])->name('forum.destroy');
+    Route::delete('/forum/replies/{reply}', [ForumController::class, 'destroyReply'])->name('forum.reply.destroy');
 
     //Notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
@@ -97,4 +106,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/recipes/pending', [\App\Http\Controllers\Admin\AdminRecipeApprovalController::class, 'pending'])->name('admin.recipes.pending');
     Route::put('/recipes/{recipe}/approve', [\App\Http\Controllers\Admin\AdminRecipeApprovalController::class, 'approve'])->name('admin.recipes.approve');
     Route::put('/recipes/{recipe}/reject', [\App\Http\Controllers\Admin\AdminRecipeApprovalController::class, 'reject'])->name('admin.recipes.reject');
+    Route::get('/statistics', [\App\Http\Controllers\Admin\AdminController::class, 'statistics'])->name('admin.statistics');
+    Route::get('/forum', [\App\Http\Controllers\Admin\AdminForumController::class, 'index'])->name('admin.forum');
+    Route::put('/forum/{topic}/pin', [\App\Http\Controllers\Admin\AdminForumController::class, 'pin'])->name('admin.forum.pin');
+    Route::put('/forum/{topic}/close', [\App\Http\Controllers\Admin\AdminForumController::class, 'close'])->name('admin.forum.close');
+    Route::delete('/forum/{topic}', [\App\Http\Controllers\Admin\AdminForumController::class, 'destroy'])->name('admin.forum.destroy');
 });

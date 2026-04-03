@@ -69,4 +69,36 @@ class ProfileController extends Controller {
         return null;
     }
 }
+public function destroy(Request $request) {
+    $request->validate([
+        'password' => 'required',
+    ]);
+
+    $user = auth()->user();
+
+    if (!\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+        return back()->withErrors(['password' => 'Incorrect password.']);
+    }
+
+    // Notify admins
+    \App\Models\User::where('role', 'admin')
+        ->where('id', '!=', $user->id)
+        ->get()
+        ->each(function($admin) use ($user) {
+            \App\Helpers\NotificationHelper::send(
+                $admin->id,
+                'admin',
+                'User account deleted',
+                $user->name . ' (' . $user->email . ') has deleted their account.',
+                route('admin.users')
+            );
+        });
+
+    auth()->logout();
+    $user->delete();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('home')->with('success', 'Your account has been deleted.');
+}
 }

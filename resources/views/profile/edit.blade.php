@@ -105,4 +105,56 @@ function togglePassword(id) {
     }
 }
 </script>
+<!-- Danger Zone -->
+<div class="bg-white rounded-2xl border border-red-100 p-6 mt-6">
+    <h2 class="font-semibold text-red-600 mb-1">Danger Zone</h2>
+    <p class="text-gray-400 text-sm mb-4">Once you delete your account all your data will be permanently removed. This cannot be undone.</p>
+
+    <button onclick="document.getElementById('delete-modal').classList.remove('hidden')"
+            class="bg-red-50 hover:bg-red-100 text-red-500 font-medium px-5 py-2.5 rounded-xl text-sm transition">
+        Delete My Account
+    </button>
+</div>
+
+<!-- Delete confirmation modal -->
+<div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl">
+        <h3 class="brand text-2xl font-black text-gray-900 mb-2">Delete Account</h3>
+        <p class="text-gray-500 text-sm mb-6">Enter your password to confirm. This action is permanent and cannot be undone.</p>
+
+        <form method="POST" action="{{ route('profile.destroy') }}">
+            @csrf
+            @method('DELETE')
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+                <div class="relative">
+                    <input type="password" name="password" id="delete-password" required
+                           placeholder="Enter your password"
+                           class="w-full border border-gray-200 rounded-xl px-4 py-3 pr-12 text-sm focus:outline-none focus:border-red-400 transition">
+                    <button type="button" onclick="togglePassword('delete-password')"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <svg id="eye-delete-password" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </button>
+                </div>
+                @error('password')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            <div class="flex gap-3">
+                <button type="button"
+                        onclick="document.getElementById('delete-modal').classList.add('hidden')"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 rounded-xl text-sm transition">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-3 rounded-xl text-sm transition">
+                    Yes, Delete Account
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
