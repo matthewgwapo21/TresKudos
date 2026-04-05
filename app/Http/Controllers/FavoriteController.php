@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Recipe;
 use App\Models\Favorite;
 use Illuminate\Http\Request;
+use App\Helpers\NotificationHelper;
 
 class FavoriteController extends Controller {
 
