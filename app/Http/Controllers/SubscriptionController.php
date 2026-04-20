@@ -16,8 +16,12 @@ class SubscriptionController extends Controller {
         }
         return view('subscription.upgrade');
     }
+     
 
     public function pay(Request $request) {
+        $request->merge([
+        'card_number' => preg_replace('/\s+/', '', $request->card_number),
+         ]);
         $request->validate([
             'card_number' => 'required|digits:16',
             'expiry'      => 'required|string',
