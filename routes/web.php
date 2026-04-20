@@ -88,6 +88,7 @@ Route::middleware('auth')->group(function () {
     // Shopping list
     Route::get('/shopping-list', [ShoppingListController::class, 'index'])->name('shopping-list.index');
 
+    // Premium
     Route::get('/premium', [SubscriptionController::class, 'upgrade'])->name('subscription.upgrade');
     Route::post('/premium/pay', [SubscriptionController::class, 'pay'])->name('subscription.pay');
     Route::post('/premium/cancel', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');

@@ -76,8 +76,7 @@
 
                         <!-- User info -->
                         <div class="px-4 py-3 border-b border-gray-100">
-                            <p class="text-sm font-semibold text-gray-900 truncate">{{ auth()->user()->name }}</p>
-                            <p class="text-xs text-gray-400 truncate">{{ auth()->user()->email }}</p>
+                            
                             <div class="px-4 py-3 border-b border-gray-100">
                                 <div class="flex items-center justify-between">
                                 <p class="text-sm font-semibold text-gray-900 truncate">{{ auth()->user()->name }}</p>
