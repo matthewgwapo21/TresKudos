@@ -15,6 +15,7 @@ use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ForumController;
+use App\Http\Controllers\SubscriptionController;
 
 // Landing page
 Route::get('/', function() {
@@ -83,11 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/recipes/{recipe}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
-    // Meal plan
-    Route::get('/meal-plan', [MealPlanController::class, 'index'])->name('meal-plan.index');
-    Route::post('/meal-plan', [MealPlanController::class, 'store'])->name('meal-plan.store');
-    Route::delete('/meal-plan/{mealPlan}', [MealPlanController::class, 'destroy'])->name('meal-plan.destroy');
-
+   
     // Shopping list
     Route::get('/shopping-list', [ShoppingListController::class, 'index'])->name('shopping-list.index');
 });
@@ -111,4 +108,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/forum/{topic}/pin', [\App\Http\Controllers\Admin\AdminForumController::class, 'pin'])->name('forum.pin');
     Route::put('/forum/{topic}/close', [\App\Http\Controllers\Admin\AdminForumController::class, 'close'])->name('forum.close');
     Route::delete('/forum/{topic}', [\App\Http\Controllers\Admin\AdminForumController::class, 'destroy'])->name('forum.destroy');
+    Route::get('/premium', [SubscriptionController::class, 'upgrade'])->name('subscription.upgrade');
+    Route::post('/premium/pay', [SubscriptionController::class, 'pay'])->name('subscription.pay');
+    Route::post('/premium/cancel', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
+});
+
+Route::middleware('premium')->group(function () {
+    Route::get('/meal-plan', [MealPlanController::class, 'index'])->name('meal-plan.index');
+    Route::post('/meal-plan', [MealPlanController::class, 'store'])->name('meal-plan.store');
+    Route::delete('/meal-plan/{mealPlan}', [MealPlanController::class, 'destroy'])->name('meal-plan.destroy');
+    Route::get('/shopping-list', [ShoppingListController::class, 'index'])->name('shopping-list.index');
 });

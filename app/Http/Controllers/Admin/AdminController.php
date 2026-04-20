@@ -11,6 +11,7 @@ use App\Models\Comment;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\UserSubscription;
 
 class AdminController extends Controller {
 
@@ -27,6 +28,9 @@ class AdminController extends Controller {
 
         $latestUsers   = User::latest()->take(5)->get();
         $latestRecipes = Recipe::with('user')->latest()->take(5)->get();
+        $stats['total_subscribers'] = UserSubscription::where('status', 'active')
+            ->where('expires_at', '>', now())
+            ->count();
 
         return view('admin.dashboard', compact('stats', 'latestUsers', 'latestRecipes'));
     }

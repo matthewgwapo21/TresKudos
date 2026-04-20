@@ -56,4 +56,13 @@ public function unreadNotifications() {
 public function forumTopics() {
     return $this->hasMany(ForumTopic::class);
 }
+public function subscription() {
+    return $this->hasOne(\App\Models\UserSubscription::class)->latest();
+}
+
+public function isPremium() {
+    if ($this->isAdmin()) return true;
+    $sub = $this->subscription;
+    return $sub && $sub->status === 'active' && $sub->expires_at > now();
+}
 }

@@ -105,6 +105,41 @@ function togglePassword(id) {
     }
 }
 </script>
+<!-- Subscription status -->
+<div class="bg-white rounded-2xl border border-gray-100 p-6 mt-6">
+    <h2 class="font-semibold text-gray-900 mb-4">Subscription</h2>
+    @if(auth()->user()->isPremium() && !auth()->user()->isAdmin())
+        @php $sub = auth()->user()->subscription; @endphp
+        <div class="flex items-center justify-between">
+            <div>
+                <span class="bg-orange-100 text-orange-600 text-xs font-bold px-3 py-1 rounded-full">⭐ PREMIUM</span>
+                <p class="text-gray-400 text-sm mt-2">
+                    Active until {{ $sub->expires_at->format('M d, Y') }}
+                </p>
+            </div>
+            <form method="POST" action="{{ route('subscription.cancel') }}"
+                  onsubmit="return confirm('Cancel your premium subscription?')">
+                @csrf
+                <button class="bg-red-50 hover:bg-red-100 text-red-500 px-4 py-2 rounded-xl text-sm font-medium transition">
+                    Cancel Subscription
+                </button>
+            </form>
+        </div>
+    @elseif(!auth()->user()->isAdmin())
+        <div class="flex items-center justify-between">
+            <div>
+                <span class="bg-gray-100 text-gray-500 text-xs font-bold px-3 py-1 rounded-full">FREE</span>
+                <p class="text-gray-400 text-sm mt-2">Upgrade to access Meal Planner and Shopping List</p>
+            </div>
+            <a href="{{ route('subscription.upgrade') }}"
+               class="btn-primary text-white px-4 py-2 rounded-xl text-sm font-medium">
+                Upgrade ₱99/mo
+            </a>
+        </div>
+    @else
+        <span class="bg-orange-100 text-orange-600 text-xs font-bold px-3 py-1 rounded-full">⭐ ADMIN — Premium Forever</span>
+    @endif
+</div>
 <!-- Danger Zone -->
 <div class="bg-white rounded-2xl border border-red-100 p-6 mt-6">
     <h2 class="font-semibold text-red-600 mb-1">Danger Zone</h2>

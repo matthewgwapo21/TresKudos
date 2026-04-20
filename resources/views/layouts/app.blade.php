@@ -78,6 +78,15 @@
                         <div class="px-4 py-3 border-b border-gray-100">
                             <p class="text-sm font-semibold text-gray-900 truncate">{{ auth()->user()->name }}</p>
                             <p class="text-xs text-gray-400 truncate">{{ auth()->user()->email }}</p>
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                <p class="text-sm font-semibold text-gray-900 truncate">{{ auth()->user()->name }}</p>
+                                    @if(auth()->user()->isPremium())
+                                    <span class="bg-orange-100 text-orange-600 text-xs font-bold px-2 py-0.5 rounded-full">⭐ Premium</span>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-gray-400 truncate">{{ auth()->user()->email }}</p>
+                            </div>
                         </div>
 
                         <!-- Main links -->
@@ -86,10 +95,7 @@
                                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition">
                                 <span class="text-base">🍽️</span> Browse Recipes
                             </a>
-                            <a href="{{ route('search') }}"
-                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition">
-                                <span class="text-base">🔍</span> Search
-                            </a>
+                            
                             <a href="{{ route('profile.show') }}"
                                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition">
                                 <span class="text-base">👤</span> My Profile

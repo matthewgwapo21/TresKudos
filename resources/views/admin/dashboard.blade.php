@@ -46,6 +46,10 @@
         <p class="text-4xl font-bold text-orange-500">{{ $stats['total_favorites'] }}</p>
         <p class="text-gray-500 text-sm mt-1">Total Favorites</p>
     </div>
+    <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+        <p class="text-4xl font-bold text-orange-500">{{ $stats['total_subscribers'] }}</p>
+        <p class="text-gray-500 text-sm mt-1">Premium Subscribers</p>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
