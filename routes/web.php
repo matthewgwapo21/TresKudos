@@ -64,7 +64,7 @@ Route::middleware('auth')->group(function () {
     // Search & categories
     Route::get('/search', function() {
     return redirect()->route('recipes.index', request()->all());
-})->name('search');
+    })->name('search');
     Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 
     // Favorites
@@ -87,6 +87,10 @@ Route::middleware('auth')->group(function () {
    
     // Shopping list
     Route::get('/shopping-list', [ShoppingListController::class, 'index'])->name('shopping-list.index');
+
+    Route::get('/premium', [SubscriptionController::class, 'upgrade'])->name('subscription.upgrade');
+    Route::post('/premium/pay', [SubscriptionController::class, 'pay'])->name('subscription.pay');
+    Route::post('/premium/cancel', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
 });
 
 // Admin routes
@@ -108,9 +112,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/forum/{topic}/pin', [\App\Http\Controllers\Admin\AdminForumController::class, 'pin'])->name('forum.pin');
     Route::put('/forum/{topic}/close', [\App\Http\Controllers\Admin\AdminForumController::class, 'close'])->name('forum.close');
     Route::delete('/forum/{topic}', [\App\Http\Controllers\Admin\AdminForumController::class, 'destroy'])->name('forum.destroy');
-    Route::get('/premium', [SubscriptionController::class, 'upgrade'])->name('subscription.upgrade');
-    Route::post('/premium/pay', [SubscriptionController::class, 'pay'])->name('subscription.pay');
-    Route::post('/premium/cancel', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
+  
 });
 
 Route::middleware('premium')->group(function () {
