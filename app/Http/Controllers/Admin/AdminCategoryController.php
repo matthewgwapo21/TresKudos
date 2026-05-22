@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Helpers\ActivityHelper;
 
 class AdminCategoryController extends Controller {
     public function index() {
@@ -22,6 +23,7 @@ class AdminCategoryController extends Controller {
             'slug'        => Str::slug($request->name),
             'description' => $request->description,
         ]);
+        ActivityHelper::log('Added Category', auth()->user()->name . ' added category "' . $request->name . '"');
         return back()->with('success', 'Category created!');
     }
 
@@ -34,10 +36,12 @@ class AdminCategoryController extends Controller {
             'slug'        => Str::slug($request->name),
             'description' => $request->description,
         ]);
+        ActivityHelper::log('Edited Category', auth()->user()->name . ' edited category "' . $category->name . '"');
         return back()->with('success', 'Category updated!');
     }
 
     public function destroy(Category $category) {
+        ActivityHelper::log('Deleted Category', auth()->user()->name . ' deleted category "' . $category->name . '"');
         $category->delete();
         return back()->with('success', 'Category deleted.');
     }

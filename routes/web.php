@@ -113,6 +113,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/forum/{topic}/pin', [\App\Http\Controllers\Admin\AdminForumController::class, 'pin'])->name('forum.pin');
     Route::put('/forum/{topic}/close', [\App\Http\Controllers\Admin\AdminForumController::class, 'close'])->name('forum.close');
     Route::delete('/forum/{topic}', [\App\Http\Controllers\Admin\AdminForumController::class, 'destroy'])->name('forum.destroy');
+    Route::get('/activity-log', [\App\Http\Controllers\Admin\AdminController::class, 'activityLog'])->name('activity-log');
   
 });
 

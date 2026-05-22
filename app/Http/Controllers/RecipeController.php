@@ -9,38 +9,71 @@ use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
+use App\Helpers\ActivityHelper; 
 
 class RecipeController extends Controller {
 
     public function index(Request $request) {
-        $query = Recipe::with('user', 'category')->approved()->latest();
+    $query = Recipe::with('user', 'category')->approved();
 
-        if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
-        }
-
-        if ($request->filled('sort') && $request->sort === 'oldest') {
-            $query = Recipe::with('user', 'category')->approved()->oldest();
-            if ($request->filled('category')) {
-                $query->where('category_id', $request->category);
-            }
-        }
-
-        $recipes    = $query->paginate(12);
-        $categories = Category::all();
-        return view('recipes.index', compact('recipes', 'categories'));
+    if ($request->filled('q')) {
+        $term = $request->q;
+        $query->where(function($q) use ($term) {
+            $q->where('title', 'like', "%{$term}%")
+              ->orWhere('description', 'like', "%{$term}%");
+        });
     }
 
-    public function show(Recipe $recipe, Request $request) {
-        $commentSort = $request->get('comment_sort', 'latest');
-        $recipe->load('ingredients', 'steps', 'user', 'category', 'reviews.user');
-        $comments = $recipe->comments()->with('user')
-            ->orderBy('created_at', $commentSort === 'oldest' ? 'asc' : 'desc')
-            ->get();
-        $isFavorited = auth()->check() ? $recipe->isFavoritedBy(auth()->user()) : false;
-        $userReview  = auth()->check() ? $recipe->userReview() : null;
-        return view('recipes.show', compact('recipe', 'isFavorited', 'userReview', 'comments'));
+    if ($request->filled('category')) {
+        $query->where('category_id', $request->category);
     }
+
+    if ($request->filled('prep_time')) {
+        $query->whereRaw('(prep_time + cook_time) <= ?', [(int) $request->prep_time]);
+    }
+
+    if ($request->get('sort') === 'oldest') {
+        $query->oldest();
+    } else {
+        $query->latest();
+    }
+
+    $recipes    = $query->paginate(12)->withQueryString();
+    $categories = Category::all();
+    return view('recipes.index', compact('recipes', 'categories'));
+}
+
+    public function show(Recipe $recipe, Request $request)
+{
+    $commentSort = $request->get('comment_sort', 'latest');
+
+    $commentsQuery = $recipe->comments()->with('user');
+
+    if ($commentSort === 'oldest') {
+        $commentsQuery->oldest();
+    } else {
+        $commentsQuery->latest();
+    }
+
+    $comments = $commentsQuery->get();
+
+    $recipe->load('ingredients', 'steps', 'user', 'category', 'reviews.user');
+
+    $isFavorited = auth()->check()
+        ? $recipe->isFavoritedBy(auth()->user())
+        : false;
+
+    $userReview = auth()->check()
+        ? $recipe->userReview()
+        : null;
+
+    return view('recipes.show', compact(
+        'recipe',
+        'comments',
+        'isFavorited',
+        'userReview'
+    ));
+}
 
     public function create() {
         $categories = Category::all();
@@ -104,6 +137,7 @@ class RecipeController extends Controller {
             );
         }
 
+        ActivityHelper::log('Added Recipe', auth()->user()->name . ' added recipe "' . $recipe->title . '"');
         return redirect()->route('profile.show')
             ->with('success', 'Recipe submitted! Waiting for admin approval.');
     }
@@ -166,6 +200,7 @@ class RecipeController extends Controller {
             ]);
         }
 
+        ActivityHelper::log('Edited Recipe', auth()->user()->name . ' edited recipe "' . $recipe->title . '"');
         return redirect()->route('recipes.show', $recipe)
             ->with('success', 'Recipe updated successfully!');
     }
@@ -177,7 +212,8 @@ class RecipeController extends Controller {
         if ($recipe->image && !str_starts_with($recipe->image, 'http')) {
             Storage::disk('public')->delete($recipe->image);
         }
-        $recipe->delete();
+        ActivityHelper::log('Deleted Recipe', auth()->user()->name . ' deleted recipe "' . $recipe->title . '"');
+        $recipe->delete();       
         return redirect()->route('recipes.index')
             ->with('success', 'Recipe deleted.');
     }

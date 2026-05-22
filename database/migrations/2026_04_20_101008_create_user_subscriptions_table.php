@@ -13,8 +13,8 @@ return new class extends Migration {
             $table->decimal('amount', 8, 2)->default(99.00);
             $table->string('status')->default('active');
             $table->string('card_last_four')->nullable();
-            $table->timestamp('starts_at');
-            $table->timestamp('expires_at');
+            $table->timestamp('starts_at')->nullable();
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Helpers\NotificationHelper;
+use App\Helpers\ActivityHelper;
 
 
 class AdminUserController extends Controller {
@@ -23,7 +24,8 @@ public function promote(User $user) {
         'Congratulations! You have been granted admin privileges on TresKudos. You can now access the admin dashboard.',
         route('admin.dashboard')
     );
-
+    
+    ActivityHelper::log('Promoted User', auth()->user()->name . ' promoted ' . $user->name . ' to admin.');
     return back()->with('success', $user->name . ' is now an admin!');
 }
 
@@ -31,7 +33,7 @@ public function demote(User $user) {
     if ($user->id === auth()->id()) {
         return back()->with('error', 'You cannot remove your own admin role.');
     }
-
+    ActivityHelper::log('Demoted User', auth()->user()->name . ' demoted ' . $user->name . ' from admin.');
     $user->update(['role' => 'user']);
 
     NotificationHelper::send(
@@ -41,7 +43,7 @@ public function demote(User $user) {
         'Your admin privileges on TresKudos have been removed by an administrator.',
         route('home')
     );
-
+    
     return back()->with('success', $user->name . ' is no longer an admin.');
 }
 }

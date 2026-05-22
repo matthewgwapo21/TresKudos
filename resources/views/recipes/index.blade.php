@@ -48,23 +48,35 @@
         </div>
 
         <!-- Max time input -->
-        <input type="number" name="prep_time" value="{{ request('prep_time') }}"
+        <!--<input type="number" name="prep_time" value="{{ request('prep_time') }}"
                placeholder="Max cook time (min)"
                class="border border-gray-200 rounded-xl px-4 py-2 text-sm w-44 focus:outline-none focus:border-orange-400 transition">
+        -->
+    <form method="GET" action="{{ route('recipes.index') }}" class="flex items-center gap-2">
+        @foreach(request()->except('prep_time') as $key => $val)
+            <input type="hidden" name="{{ $key }}" value="{{ $val }}">
+        @endforeach
+        <input type="number" name="prep_time" value="{{ request('prep_time') }}"
+               placeholder="Max total time (min)"
+               class="w-44 border border-gray-200 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:border-orange-400 transition">
+        <button type="submit" class="bg-orange-500 text-white px-3 py-1.5 rounded-xl text-sm">Go</button>
+        @if(request('prep_time'))
+            <a href="{{ route('recipes.index', request()->except('prep_time')) }}" class="text-xs text-red-400 hover:text-red-600">✕ Clear</a>
+        @endif
+        </form>
 
-        <!-- Sort -->
-        <div class="flex gap-2">
-            <a href="{{ request()->fullUrlWithQuery(['sort' => 'latest']) }}"
-               class="px-4 py-1.5 rounded-full text-sm font-medium transition
-                      {{ request('sort', 'latest') === 'latest' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
-                Latest
-            </a>
-            <a href="{{ request()->fullUrlWithQuery(['sort' => 'oldest']) }}"
-               class="px-4 py-1.5 rounded-full text-sm font-medium transition
-                      {{ request('sort') === 'oldest' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
-                Oldest
-            </a>
-        </div>
+        <!-- Sort buttons -->
+        <a href="{{ route('recipes.index', array_merge(request()->all(), ['sort' => 'latest'])) }}"
+            class="px-3 py-1.5 rounded-full text-sm font-medium transition
+                {{ request('sort', 'latest') === 'latest' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-orange-300' }}">
+            Latest
+        </a>
+        <a href="{{ route('recipes.index', array_merge(request()->all(), ['sort' => 'oldest'])) }}"
+            class="px-3 py-1.5 rounded-full text-sm font-medium transition
+                {{ request('sort') === 'oldest' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-orange-300' }}">
+            Oldest
+        </a>
+    </div>
 
         <!-- Clear filters -->
         @if(request()->anyFilled(['q', 'category', 'prep_time', 'sort']))

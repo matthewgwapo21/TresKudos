@@ -226,7 +226,7 @@
    <h2 class="brand text-2xl font-black text-gray-900 mb-4">
     Comments
     @if($comments->count())
-        <span class="text-gray-300 text-lg font-normal">({{ $recipe->comments->count() }})</span>
+        <span class="text-gray-300 text-lg font-normal">({{ $comments->count() }})</span>
     @endif
 </h2>
 <div class="flex gap-2 mb-6">

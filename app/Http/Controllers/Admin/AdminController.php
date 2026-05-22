@@ -12,6 +12,7 @@ use App\Models\Review;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\UserSubscription;
+use App\Models\ActivityLog;
 
 class AdminController extends Controller {
 
@@ -56,4 +57,10 @@ class AdminController extends Controller {
 
         return view('admin.statistics', compact('months'));
     }
+    public function activityLog() {
+    $logs = ActivityLog::with('user')
+        ->latest()
+        ->paginate(20);
+    return view('admin.activity-log', compact('logs'));
+}
 }

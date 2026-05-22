@@ -26,7 +26,7 @@ class ProfileController extends Controller {
             'name'     => 'required|string|max:255',
             'bio'      => 'nullable|string|max:500',
             'avatar'   => 'nullable|image|max:2048',
-            'password' => 'nullable|min:6|confirmed',
+            'password' => 'nullable|min:8|confirmed|regex:/^(?=.*[a-zA-Z])(?=.*[0-9]).+$/',
         ]);
 
         $data = [
